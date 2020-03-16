@@ -1,6 +1,9 @@
 import os
+from datetime import datetime
+
 from pony.orm import *
 from dotenv import load_dotenv
+
 load_dotenv()
 
 POSTGRES_HOST = str(os.getenv('POSTGRES_HOST'))
@@ -21,9 +24,9 @@ class Virgin(db.Entity):
   total_vc_time = Required(float, default=0)
   total_vc_time_ever = Required(float, default=0)
   virginity_score = Required(int, default=0, index=True)
+  vc_connection_start = Optional(datetime)
 
-  PrimaryKey(guild, name, discriminator)
-  # SecondaryKey(virginity_score)
+  PrimaryKey(guild, id)
 
   def is_user(name, disc):
     return this.name == name and this.discriminator == disc
@@ -43,12 +46,5 @@ def get_smolest_virgin(guild: str):
 
 
 @db_session
-def get_users_virginity(guild: str, name: str, disc: str):
-  return Virgin.get(guild=guild, name=name, discriminator=disc)
-
-
-@db_session
 def get_users_virginity_by_id(guild: str, ID: str):
-  print(guild)
-  print(id)
   return Virgin.get(guild=guild, id=ID)
