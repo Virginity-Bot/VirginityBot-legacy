@@ -10,7 +10,8 @@ POSTGRES_PASS = str(os.getenv('POSTGRES_PASS'))
 
 db = Database()
 db.bind(provider='postgres', host=POSTGRES_HOST, port=POSTGRES_PORT,
-  user=POSTGRES_USER, password=POSTGRES_PASS)
+        user=POSTGRES_USER, password=POSTGRES_PASS)
+
 
 class Virgin(db.Entity):
   name = Required(str)
@@ -25,11 +26,19 @@ class Virgin(db.Entity):
   def is_user(name, disc):
     return this.name == name and this.discriminator == disc
 
+
 db.generate_mapping(create_tables=True)
+
 
 @db_session
 def get_biggest_virgin():
-  Virgin.sort_by(lambda v: v.virginity_score).limit(1)
+  return Virgin.select().sort_by(desc(Virgin.virginity_score)).limit(1)
+
+
+@db_session
+def get_users_virginity(name: str, disc: str):
+  return Virgin.get(name=name, discriminator=disc)
+
 
 with db_session:
   # print(select(p for p in Virgin))
