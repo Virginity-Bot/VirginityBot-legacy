@@ -1,6 +1,5 @@
 import math
 
-
 def calc_total_virginity(virgin):
   # TODO: implement a curve for virginity
   # TODO: implement a score multiplier for bots
