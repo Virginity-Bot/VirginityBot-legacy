@@ -8,6 +8,8 @@ ENV POSTGRES_HOST hostname
 ENV POSTGRES_PORT 5432
 ENV POSTGRES_USER postgres
 ENV POSTGRES_PASS password
+ENV POINTS_PER_MINUTE 5
+ENV BOT_SCORE_MULTIPLIER 0.5
 
 RUN useradd --create-home virginitybot
 WORKDIR /home/virginitybot
