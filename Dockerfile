@@ -23,6 +23,6 @@ COPY *.py ./
 
 RUN pip install -r requirements.txt
 
-CMD python bot.py
+CMD python main.py
 
 # HEALTHCHECK CMD mcstatus localhost status || exit 1
