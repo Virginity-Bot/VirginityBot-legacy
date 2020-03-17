@@ -93,13 +93,17 @@ async def on_message(message):
 async def on_voice_state_update(member: Member, before: VoiceState, after: VoiceState):
   # Virgin connects to VC
   if before.channel == None and after.channel != None:
+    print(f'{member.name} connected')
     start_adding_virginity(member, after)
   elif before.channel != None and after.channel == None:
+    print(f'{member.name} disconnected')
     stop_adding_virginity(member)
   elif (before.self_mute == False and after.self_mute == True) or (before.self_deaf == False and after.self_deaf == True):
+    print(f'{member.name} muted')
     stop_adding_virginity(member)
   elif (before.self_mute == True and after.self_mute == False) or (before.self_deaf == True and after.self_deaf == False):
-    start_adding_virginity(member)
+    print(f'{member.name} unmuted')
+    start_adding_virginity(member, after)
 
 
 @db_session
@@ -107,7 +111,6 @@ def start_adding_virginity(virgin: Member, voice_state: VoiceState):
   # if voice_state.channel != afk
   if voice_state.self_mute == False and voice_state.self_deaf == False:
     if Virgin.exists(guild=str(virgin.guild.id), id=str(virgin.id)):
-      print(f'{virgin.name} connected')
       real_virgin = Virgin.get(
           guild=str(virgin.guild.id), id=str(virgin.id))
       # TODO: be more thoughtful about overriding start times
@@ -121,7 +124,6 @@ def start_adding_virginity(virgin: Member, voice_state: VoiceState):
 @db_session
 def stop_adding_virginity(virgin: Member):
   if Virgin.exists(guild=str(virgin.guild.id), id=str(virgin.id)):
-    print(f'{virgin.name} muted')
     real_virgin = Virgin.get(
         guild=str(virgin.guild.id), id=str(virgin.id))
     time_spent = datetime.now() - real_virgin.vc_connection_start
