@@ -37,12 +37,12 @@ db.generate_mapping(create_tables=True)
 
 @db_session
 def get_biggest_virgin(guild: str):
-  return Virgin.select().sort_by(desc(Virgin.virginity_score)).limit(1)[0]
+  return Virgin.select(lambda v: v.guild == guild).sort_by(desc(Virgin.virginity_score)).limit(1)[0]
 
 
 @db_session
 def get_smolest_virgin(guild: str):
-  return Virgin.select().sort_by(Virgin.virginity_score).limit(1)[0]
+  return Virgin.select(lambda v: v.guild == guild).sort_by(Virgin.virginity_score).limit(1)[0]
 
 
 @db_session
