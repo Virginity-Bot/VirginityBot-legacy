@@ -15,11 +15,11 @@ RUN useradd --create-home virginitybot
 WORKDIR /home/virginitybot
 USER virginitybot
 
-COPY Dockerfile .
-COPY README.md .
-COPY LICENSE .
-COPY requirements.txt .
-COPY *.py .
+COPY Dockerfile ./
+COPY README.md ./
+COPY LICENSE ./
+COPY requirements.txt ./
+COPY *.py ./
 
 RUN pip install -r requirements.txt
 
