@@ -7,6 +7,7 @@ import re
 from datetime import datetime
 
 import discord
+from discord import Member, VoiceState
 from discord.ext import commands
 from dotenv import load_dotenv
 from pony.orm import *
