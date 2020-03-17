@@ -2,7 +2,6 @@
 import os
 import random
 import functools
-import numpy as np
 import re
 from datetime import datetime
 
