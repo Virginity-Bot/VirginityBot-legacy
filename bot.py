@@ -7,6 +7,7 @@ import re
 from datetime import datetime
 
 import discord
+from discord import Member, VoiceState
 from discord.ext import commands
 from dotenv import load_dotenv
 from pony.orm import *
@@ -113,37 +114,47 @@ async def add(ctx):
       return
     await ctx.send(f'Please send 1₿ to 1F1tAaz5-1HUXrLMAOMDqcw69xGNn4xqX')
 
-
 @bot.event
-async def on_voice_state_update(member, before, after):
-  with db_session:
-    # Virgin connects to VC
-    if before.channel == None and after.channel != None:
-      # if after.channel != afk
-      if Virgin.exists(guild=str(member.guild.id), id=str(member.id)):
-        print('User connected')
-        virgin = Virgin.get(
-            guild=str(member.guild.id), id=str(member.id))
-        # TODO: be more thoughtful about overriding start times
-        virgin.vc_connection_start = datetime.now()
-        commit()
-      else:
-        Virgin(guild=str(member.guild.id), id=str(member.id), name=member.name,
-               discriminator=member.discriminator)
-    elif before.channel != None and after.channel == None:
-      # if after.channel != afk
-      if Virgin.exists(guild=str(member.guild.id), id=str(member.id)):
-        print('User disconnected')
-        virgin = Virgin.get(
-            guild=str(member.guild.id), id=str(member.id))
-        time_spent = datetime.now() - virgin.vc_connection_start
-        print('time_spent')
-        print(time_spent)
-        virgin.total_vc_time += time_spent.total_seconds()
-        virgin.total_vc_time_ever += time_spent.total_seconds()
-        virgin.virginity_score = calc_total_virginity(virgin)
-        virgin.vc_connection_start = None
-        commit()
+async def on_voice_state_update(member: Member, before: VoiceState, after: VoiceState):
+  # Virgin connects to VC
+  if before.channel == None and after.channel != None:
+    start_adding_virginity(member, after)
+  elif before.channel != None and after.channel == None:
+    stop_adding_virginity(member)
+  elif (before.self_mute == False and after.self_mute == True) or (before.self_deaf == False and after.self_deaf == True):
+    stop_adding_virginity(member)
+  elif (before.self_mute == True and after.self_mute == False) or (before.self_deaf == True and after.self_deaf == False):
+    start_adding_virginity(member)
+
+@db_session
+def start_adding_virginity(virgin: Member, voice_state: VoiceState):
+  # if voice_state.channel != afk
+  if voice_state.self_mute == False and voice_state.self_deaf == False:
+    if Virgin.exists(guild=str(virgin.guild.id), id=str(virgin.id)):
+      print(f'{virgin.name} connected')
+      real_virgin = Virgin.get(
+          guild=str(virgin.guild.id), id=str(virgin.id))
+      # TODO: be more thoughtful about overriding start times
+      real_virgin.vc_connection_start = datetime.now()
+      commit()
+    else:
+      Virgin(guild=str(virgin.guild.id), id=str(virgin.id), name=virgin.name,
+             discriminator=virgin.discriminator, vc_connection_start=datetime.now())
+
+@db_session
+def stop_adding_virginity(virgin: Member):
+  if Virgin.exists(guild=str(virgin.guild.id), id=str(virgin.id)):
+    print(f'{virgin.name} muted')
+    real_virgin = Virgin.get(
+        guild=str(virgin.guild.id), id=str(virgin.id))
+    time_spent = datetime.now() - real_virgin.vc_connection_start
+    print('time_spent')
+    print(time_spent)
+    real_virgin.total_vc_time += time_spent.total_seconds()
+    real_virgin.total_vc_time_ever += time_spent.total_seconds()
+    real_virgin.virginity_score = calc_total_virginity(real_virgin)
+    real_virgin.vc_connection_start = None
+    commit()
 
 async def handlebiggestvirgin(ctx):
   bigun = get_biggest_virgin(str(ctx.message.guild.id))
