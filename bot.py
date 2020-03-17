@@ -53,6 +53,11 @@ async def myvirginity(ctx):
   with db_session:
     virgin = Virgin.get(guild_id=str(ctx.message.guild.id),
                         id=str(ctx.message.author.id))
+    if virgin is None:
+      virgin = Virgin(id=str(ctx.message.author.id), guild_id=str(ctx.message.guild.id),
+                      name=ctx.message.author.name, discriminator=ctx.message.author.discriminator,
+                      is_bot=ctx.message.author.bot)
+      return await ctx.send(f'{virgin.name} ain\'t no virgin. (at least not yet)')
     virgin.virginity_score = calc_total_virginity(virgin)
     commit()
     return await ctx.send(virgin.virginity_score)
