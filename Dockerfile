@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:3
 
 LABEL maintainer="louis@orleans.io"
 
@@ -9,13 +9,15 @@ ENV POSTGRES_PORT 5432
 ENV POSTGRES_USER postgres
 ENV POSTGRES_PASS password
 
-COPY Dockerfile /virginity-bot/
-COPY README.md /virginity-bot/
-COPY LICENSE /virginity-bot/
-COPY requirements.txt /virginity-bot/
-COPY *.py /virginity-bot/
+RUN useradd --create-home virginitybot
+WORKDIR /home/virginitybot
+USER virginitybot
 
-WORKDIR /virginity-bot
+COPY Dockerfile .
+COPY README.md .
+COPY LICENSE .
+COPY requirements.txt .
+COPY *.py .
 
 RUN pip install -r requirements.txt
 
