@@ -19,19 +19,17 @@ TOKEN = str(os.getenv('DISCORD_TOKEN'))
 
 # print(TOKEN)
 
-client = discord.Client()
+bot = commands.Bot(command_prefix=('/'))
 
-
-@db_session
-@client.event
+@bot.event
 async def on_ready():
-  print(f'{client.user.name} has connected to Discord!')
+  print(f'{bot.user.name} has connected to Discord!')
 
-  guilds = client.guilds
+  guilds = bot.guilds
   voice_channels = []
 
   with db_session:
-    for guild in client.guilds:
+    for guild in bot.guilds:
       for channel in guild.channels:
         # print(f'{channel},{channel.type}')
         if channel.type == discord.ChannelType.voice and channel != guild.afk_channel:
@@ -47,49 +45,76 @@ async def on_ready():
               Virgin(guild=str(guild.id), id=str(virgin.id), name=virgin.name,
                      discriminator=virgin.discriminator)
 
-
-@db_session
-@client.event
 # /myvirginity
-async def on_message(message):
-  with db_session:
-    show(message)
-    if message.author == client.user:
+@bot.command(name='myvirginity')
+async def myvirginity(ctx):
+    if ctx.message.author == bot.user:
       return
-    if message.content.startswith('/myvirginity'):
-      virgin = Virgin.get(guild=str(message.guild.id),
-                          id=str(message.author.id))
+    with db_session:
+      virgin = Virgin.get(guild=str(ctx.message.guild.id),
+                          id=str(ctx.message.author.id))
       virgin.virginity_score = calc_total_virginity(virgin)
       commit()
-      await message.channel.send(virgin.virginity_score)
-    if message.content.startswith('/checkvirginity'):
-      print(message.content)
-      match = re.match('^\/checkvirginity <@([0-9]+)>\W*$', message.content)
-      if not match:
-        await message.channel.send('User specification failed')
+      await ctx.send(virgin.virginity_score)
+
+# /checkvirgininty
+@bot.command(name='checkvirginity')
+async def checkvirginity(ctx):
+    if ctx.message.author == bot.user:
+      return
+    match = re.match('^\/checkvirginity <@([0-9]+)>\W*$', ctx.message.content)
+    if not match:
+      await ctx.send('User specification failed')
+    else:
+      virgin = Virgin.get(guild=str(ctx.message.guild.id), id=match.group(1))
+      if not virgin:
+        await ctx.send('Virgin not found')
       else:
-        virgin = Virgin.get(guild=str(message.guild.id), id=match.group(1))
-        if not virgin:
-          await message.channel.send('Virgin not found')
-        else:
-          virgin.virginity_score = calc_total_virginity(virgin)
-          commit()
-          await message.channel.send(virgin.virginity_score)
-    if message.content.startswith('/biggestvirgin') or message.content.startswith('/topvirgin'):
-      # TODO: update virginity_score for all connected users before display
-      bigun = get_biggest_virgin(str(message.guild.id))
-      await message.channel.send(f'🎉 {bigun.name} :nun:')
-    if message.content.startswith('/smolestvirgin'):
-      smol = get_smolest_virgin(str(message.guild.id))
-      await message.channel.send(f'🏩 {smol.name} 💦')
-    if message.content.startswith('/resetvirginity'):
-      await message.channel.send(f'🔴 I\'m sorry {message.author.name}, I\'m afraid I can\'t do that.')
-    if message.content.startswith('/add'):
-      await message.channel.send(f'Please send 1₿ to 1F1tAaz5-1HUXrLMAOMDqcw69xGNn4xqX')
+        virgin.virginity_score = calc_total_virginity(virgin)
+        commit()
+        await ctx.send(virgin.virginity_score)
+
+# /biggestvirgin
+@bot.command(name='biggestvirgin')
+async def biggestvirgin(ctx):
+    if ctx.message.author == bot.user:
+      return
+    # TODO: update virginity_score for all connected users before display
+    await handlebiggestvirgin(ctx)
+
+# /topvirgin
+@bot.command(name='topvirgin')
+async def topvirgin(ctx):
+    if ctx.message.author == bot.user:
+      return
+    # TODO: update virginity_score for all connected users before display
+    await handlebiggestvirgin(ctx)
+
+# /smolestvirgin
+@bot.command(name='smolestvirgin')
+async def smolestvirgin(ctx):
+    if ctx.message.author == bot.user:
+      return
+    # smol = get_smolest_virgin(str(ctx.message.guild.id))
+    # await ctx.send(f'🏩 {smol.name} 💦')
+    await handlesmolestvirgin(ctx)
+
+# /resetvirginity
+@bot.command(name='resetvirginity')
+async def resetvirginity(ctx):
+    if ctx.message.author == bot.user:
+      return
+    await ctx.send(f'🔴 I\'m sorry {ctx.message.author.name}, I\'m afraid I can\'t do that.')
+
+# /add
+@bot.command(name='add')
+async def add(ctx):
+    if ctx.message.author == bot.user:
+      return
+    await ctx.send(f'Please send 1₿ to 1F1tAaz5-1HUXrLMAOMDqcw69xGNn4xqX')
 
 
-@db_session
-@client.event
+@bot.event
 async def on_voice_state_update(member, before, after):
   with db_session:
     # Virgin connects to VC
@@ -120,22 +145,13 @@ async def on_voice_state_update(member, before, after):
         virgin.vc_connection_start = None
         commit()
 
-# @bot.command(name='biggestvirgin')
-# async def biggestvirgin(ctx):
-#     if message.author == client.user:
-#         return
+async def handlebiggestvirgin(ctx):
+  bigun = get_biggest_virgin(str(ctx.message.guild.id))
+  await ctx.send(f'🎉 {bigun.name} :nun:')
 
-#     response =
-#     await ctx.send(response)
-
-
-# @bot.commd(name='sizedoesntmatter')
-# async def sizedoesntmatter(ctx):
-#     if message.author == client.user:
-#         return
-
-#     response =
-#     await ctx.send(response)
+async def handlesmolestvirgin(ctx):
+  smol = get_smolest_virgin(str(ctx.message.guild.id))
+  await ctx.send(f'🏩 {smol.name} 💦')
 
 
-client.run(TOKEN)
+bot.run(TOKEN)
