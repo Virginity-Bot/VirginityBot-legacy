@@ -55,7 +55,7 @@ async def myvirginity(ctx):
                         id=str(ctx.message.author.id))
     virgin.virginity_score = calc_total_virginity(virgin)
     commit()
-    await ctx.send(virgin.virginity_score)
+    return await ctx.send(virgin.virginity_score)
 
 # /checkvirgininty
 @bot.command(name='checkvirginity')
@@ -64,17 +64,17 @@ async def checkvirginity(ctx):
     return
   match = re.match(r'^\/checkvirginity <@(&?[0-9]+)>\W*$', ctx.message.content)
   if not match:
-    await ctx.send('User specification failed')
+    return await ctx.send('User specification failed')
   else:
     with db_session:
       virgin = Virgin.get(guild_id=str(
           ctx.message.guild.id), id=match.group(1))
       if not virgin:
-        await ctx.send('Virgin not found')
+        return await ctx.send('Virgin not found')
       else:
         virgin.virginity_score = calc_total_virginity(virgin)
         commit()
-        await ctx.send(virgin.virginity_score)
+        return await ctx.send(virgin.virginity_score)
 
 # /biggestvirgin
 @bot.command(name='biggestvirgin')
@@ -106,14 +106,14 @@ async def smolestvirgin(ctx):
 async def resetvirginity(ctx):
   if ctx.message.author == bot.user:
     return
-  await ctx.send(f'🔴 I\'m sorry {ctx.message.author.name}, I\'m afraid I can\'t do that.')
+  return await ctx.send(f'🔴 I\'m sorry {ctx.message.author.name}, I\'m afraid I can\'t do that.')
 
 # /add
 @bot.command(name='add')
 async def add(ctx):
   if ctx.message.author == bot.user:
     return
-  await ctx.send(f'Please send 1₿ to 1F1tAaz5-1HUXrLMAOMDqcw69xGNn4xqX')
+  return await ctx.send(f'Please send 1₿ to 1F1tAaz5-1HUXrLMAOMDqcw69xGNn4xqX')
 
 
 @bot.event
@@ -175,12 +175,12 @@ def stop_adding_virginity(virgin: Virgin, finish_transaction=True):
 
 async def handlebiggestvirgin(ctx):
   bigun = get_biggest_virgin(str(ctx.message.guild.id))
-  await ctx.send(f'🎉 {bigun.name} with {bigun.virginity_score} {pluralize("point", bigun.virginity_score)} :nun:')
+  return await ctx.send(f'🎉 {bigun.name} with {bigun.virginity_score} {pluralize("point", bigun.virginity_score)} :nun:')
 
 
 async def handlesmolestvirgin(ctx):
   smol = get_smolest_virgin(str(ctx.message.guild.id))
-  await ctx.send(f'🏩 {smol.name} with {smol.virginity_score} {pluralize("point", smol.virginity_score)} 💦')
+  return await ctx.send(f'🏩 {smol.name} with {smol.virginity_score} {pluralize("point", smol.virginity_score)} 💦')
 
 
 def pluralize(non_plural: str, val: int):
