@@ -13,12 +13,11 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/checkout@master
+      - name: Checkout Repository
+        uses: actions/checkout@master
 
       - name: Publish to Registry
-        uses: HurricanKai/Publish-Docker-Github-Action@master
+        uses: matootie/github-docker@v2.2.2
         with:
-          name: virginitybot/bot
-          registry: docker.pkg.github.com
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_RELEASE_ACCESS_TOKEN }}
+          imageName: virginitybot/bot
+          accessToken: ${{ secrets.DOCKER_RELEASE_ACCESS_TOKEN }}
