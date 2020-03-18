@@ -22,5 +22,3 @@ jobs:
           repositoryName: virginitybot/bot
           # imageName: bot
           accessToken: ${{ secrets.DOCKER_RELEASE_ACCESS_TOKEN }}
-
-          docker.pkg.github.com/OWNER/REPOSITORY/IMAGE_NAME:VERSION
