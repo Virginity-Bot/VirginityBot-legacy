@@ -46,7 +46,6 @@ async def on_ready():
                      vc_connection_start=datetime.now(), is_bot=virgin.bot)
 
 
-
 @bot.event
 async def on_disconnect():
   print(f'{bot.user.name} has disconnected from Discord!')
@@ -169,12 +168,20 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
       virgin = member_to_virgin(member)
       if virgin != None:
         stop_adding_virginity(virgin)
-    elif (before.self_mute == False and after.self_mute == True) or (before.self_deaf == False and after.self_deaf == True):
+    elif (
+        (before.self_mute == False or before.mute == False) and
+        (after.self_mute == True or after.mute == True)) or (
+        (before.self_deaf == False or before.deaf == False) and
+            (after.self_deaf == True or after.mute == True)):
       print(f'{member.name} muted')
       virgin = member_to_virgin(member)
       if virgin != None:
         stop_adding_virginity(virgin)
-    elif (before.self_mute == True and after.self_mute == False) or (before.self_deaf == True and after.self_deaf == False):
+    elif (
+        (before.self_mute == True or before.mute == True) and
+        (after.self_mute == False or after.mute == False)) or (
+        (before.self_deaf == True or before.deaf == True) and
+            (after.self_deaf == False or after.mute == False)):
       print(f'{member.name} unmuted')
       start_adding_virginity(member, after)
 
@@ -205,6 +212,8 @@ def start_adding_virginity(virgin: Member, voice_state: VoiceState):
 @db_session
 def stop_adding_virginity(virgin: Virgin, finish_transaction=True):
   time_spent = datetime.now() - virgin.vc_connection_start
+  if (time_spent.total_seconds() < 0):
+    print('🚨🚨🚨 OH SHIT 🚨🚨🚨')
   print(f'{virgin.name} spent {time_spent} in VC')
   virgin.total_vc_time += time_spent.total_seconds()
   virgin.total_vc_time_ever += time_spent.total_seconds()
