@@ -50,6 +50,8 @@ async def on_ready():
 async def myvirginity(ctx):
   if ctx.message.author == bot.user:
     return
+  await ctx.trigger_typing()
+
   with db_session:
     virgin = Virgin.get(guild_id=str(ctx.message.guild.id),
                         id=str(ctx.message.author.id))
@@ -67,6 +69,8 @@ async def myvirginity(ctx):
 async def checkvirginity(ctx):
   if ctx.message.author == bot.user:
     return
+  await ctx.trigger_typing()
+
   match = re.match(r'^\/checkvirginity <@(&?[0-9]+)>\W*$', ctx.message.content)
   if not match:
     return await ctx.send('User specification failed')
@@ -86,6 +90,8 @@ async def checkvirginity(ctx):
 async def biggestvirgin(ctx):
   if ctx.message.author == bot.user:
     return
+  await ctx.trigger_typing()
+
   # TODO: update virginity_score for all connected users before display
   await handlebiggestvirgin(ctx)
 
@@ -94,6 +100,8 @@ async def biggestvirgin(ctx):
 async def topvirgin(ctx):
   if ctx.message.author == bot.user:
     return
+  await ctx.trigger_typing()
+
   # TODO: update virginity_score for all connected users before display
   await handlebiggestvirgin(ctx)
 
