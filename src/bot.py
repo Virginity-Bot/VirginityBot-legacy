@@ -163,6 +163,13 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
     if before.channel is None and after.channel is not None:
       print(f'{member.name} connected')
       start_adding_virginity(member, after)
+
+      guild = Guild.get(id=str(member.guild.id))
+
+      if filter(lambda role: str(role.id) == guild.biggest_virgin_role_id, member.roles):
+        play_entrance_theme(after.channel)
+      # TODO: figure out a way to cache this
+      # show(bot.guilds[0].roles)
     elif before.channel is not None and after.channel is None:
       print(f'{member.name} disconnected')
       virgin = member_to_virgin(member)
@@ -233,7 +240,7 @@ async def handlesmolestvirgin(ctx):
   return await ctx.send(f'🏩 {smol.name} with {smol.virginity_score} {pluralize("point", smol.virginity_score)} 💦')
 
 
-async def play_sound(channel):
+async def play_entrance_theme(channel):
   voice_client = await channel.connect()
   greeting = FFmpegPCMAudio('./music.opus')
   print(datetime.now())
