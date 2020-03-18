@@ -33,6 +33,7 @@ class Guild(db.Entity):
   name = Required(str)
   # virgins = Set(Virgin)
   afk_channel_id = Optional(str)
+  biggest_virgin_role_id = Optional(str)
 
 
 def start_orm():
