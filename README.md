@@ -22,3 +22,9 @@ https://discordapp.com/developers/applications/688470281320267800/bot
 2. Not in AFK channel
 3. Alpha virgin role?
 4. rename to Ω Virgin?
+
+
+### SQL 
+
+- Calculate time to add
+- 

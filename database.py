@@ -15,7 +15,7 @@ db = Database()
 
 
 class Virgin(db.Entity):
-  id = Required(str, index=True, unique=True)
+  id = Required(str, index=True)
   guild_id = Required(str, index=True)
   name = Required(str)
   discriminator = Required(str)
@@ -32,6 +32,7 @@ class Guild(db.Entity):
   id = PrimaryKey(str)
   name = Required(str)
   # virgins = Set(Virgin)
+
 
 
 def start_orm():
@@ -60,3 +61,11 @@ def get_smolest_virgin(guild: str):
 @db_session
 def get_users_virginity_by_id(guild: str, ID: str):
   return Virgin.get(guild_id=guild, id=ID)
+
+
+@db_session
+def calculate_time_difference(virgin: Virgin):
+  vc_conn_end = datetime.now()
+  vc_conn_start = virgin.vc_connection_start
+  secdiff = float(db.get(f'SELECT DateDiff (\'s\',\'{vc_conn_start}\',\'{vc_conn_end}\');'))
+  return secdiff

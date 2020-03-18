@@ -11,7 +11,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from pony.orm import *
 
-from database import *
+from .Database import database
 from logic import calc_total_virginity
 
 load_dotenv()
@@ -91,7 +91,6 @@ async def biggestvirgin(ctx):
   if ctx.message.author == bot.user:
     return
   await ctx.trigger_typing()
-
   # TODO: update virginity_score for all connected users before display
   await handlebiggestvirgin(ctx)
 
@@ -101,7 +100,6 @@ async def topvirgin(ctx):
   if ctx.message.author == bot.user:
     return
   await ctx.trigger_typing()
-
   # TODO: update virginity_score for all connected users before display
   await handlebiggestvirgin(ctx)
 
@@ -111,8 +109,6 @@ async def smolestvirgin(ctx):
   if ctx.message.author == bot.user:
     return
   await ctx.trigger_typing()
-  # smol = get_smolest_virgin(str(ctx.message.guild.id))
-  # await ctx.send(f'🏩 {smol.name} 💦')
   await handlesmolestvirgin(ctx)
 
 
@@ -156,16 +152,19 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
     if before.channel is None and after.channel is not None:
       print(f'{member.name} connected')
       start_adding_virginity(member, after)
+
     elif before.channel is not None and after.channel is None:
       print(f'{member.name} disconnected')
       virgin = member_to_virgin(member)
       if virgin != None:
         stop_adding_virginity(virgin)
+
     elif (before.self_mute == False and after.self_mute == True) or (before.self_deaf == False and after.self_deaf == True):
       print(f'{member.name} muted')
       virgin = member_to_virgin(member)
       if virgin != None:
         stop_adding_virginity(virgin)
+
     elif (before.self_mute == True and after.self_mute == False) or (before.self_deaf == True and after.self_deaf == False):
       print(f'{member.name} unmuted')
       start_adding_virginity(member, after)
@@ -196,11 +195,12 @@ def start_adding_virginity(virgin: Member, voice_state: VoiceState):
 
 @db_session
 def stop_adding_virginity(virgin: Virgin, finish_transaction=True):
-  time_spent = datetime.now() - virgin.vc_connection_start
-  print(f'{virgin.name} spent {time_spent} in VC')
-  virgin.total_vc_time += time_spent.total_seconds()
-  virgin.total_vc_time_ever += time_spent.total_seconds()
-  virgin.virginity_score = calc_total_virginity(virgin)
+  #time_spent = datetime.now() - virgin.vc_connection_start
+  # virgin.total_vc_time += time_spent.total_seconds()
+  # virgin.total_vc_time_ever += time_spent.total_seconds()
+  virgin.total_vc_time = calculate_time_difference(virgin)
+  print(f'{virgin.name} spent {virgin.total_vc_time} in VC')
+  # virgin.virginity_score = 
   virgin.vc_connection_start = None
   if finish_transaction:
     commit()
