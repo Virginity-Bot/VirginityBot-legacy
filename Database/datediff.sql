@@ -1,8 +1,14 @@
+CREATE OR REPLACE FUNCTION DateDiff (units VARCHAR(30), start_t TIMESTAMP, end_t TIMESTAMP) 
+  RETURNS double precision AS $$
 DECLARE
   diff_interval INTERVAL; 
-  diff Float = 0.0;
+  diff double precision = 0.0;
   years_diff INT = 0;
 BEGIN
+  IF start_t - end_t = '0 days'::interval THEN
+    return diff;
+  END IF;
+
   IF units IN ('yy', 'yyyy', 'year', 'mm', 'm', 'month') THEN
     years_diff = DATE_PART('year', end_t) - DATE_PART('year', start_t);
 
@@ -47,3 +53,4 @@ BEGIN
   	RETURN diff;
   END IF;
 END;
+$$ LANGUAGE 'plpgsql';

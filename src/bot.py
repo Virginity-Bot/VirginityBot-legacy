@@ -210,7 +210,7 @@ def stop_adding_virginity(virgin: Virgin, finish_transaction=True):
   vc_conn_start = virgin.vc_connection_start
   latest_vc_time = calc_time_difference(vc_conn_start,currentDatetime)
   virgin.total_vc_time += latest_vc_time
-  virgin.total_vc_time_ever += virgin.total_vc_time
+  virgin.total_vc_time_ever += latest_vc_time
 
   print(f'{virgin.name} spent {virgin.total_vc_time} in VC')
   
