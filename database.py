@@ -64,8 +64,6 @@ def get_users_virginity_by_id(guild: str, ID: str):
 
 
 @db_session
-def calculate_time_difference(virgin: Virgin):
-  vc_conn_end = datetime.now()
-  vc_conn_start = virgin.vc_connection_start
-  secdiff = float(db.get(f'SELECT DateDiff (\'s\',\'{vc_conn_start}\',\'{vc_conn_end}\');'))
+def calculate_time_difference(start: datetime, end: datetime):
+  secdiff = float(db.get(f'SELECT DateDiff (\'s\',\'{start}\',\'{end}\');'))
   return secdiff

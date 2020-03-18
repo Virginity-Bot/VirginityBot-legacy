@@ -11,14 +11,13 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from pony.orm import *
 
-from .Database import database
+from database import *
 from logic import calc_total_virginity
 
 load_dotenv()
 TOKEN = str(os.getenv('DISCORD_TOKEN'))
 
 bot = commands.Bot(command_prefix=('/'))
-
 
 @bot.event
 async def on_ready():
@@ -182,8 +181,8 @@ def start_adding_virginity(virgin: Member, voice_state: VoiceState):
   if not voice_state.afk:
     if voice_state.self_mute == False and voice_state.self_deaf == False:
       if Virgin.exists(guild_id=str(virgin.guild.id), id=str(virgin.id)):
-        real_virgin = Virgin.get(
-            guild_id=str(virgin.guild.id), id=str(virgin.id))
+        real_virgin = Virgin.get(guild_id=str(virgin.guild.id), 
+                                 id=str(virgin.id))
         # TODO: be more thoughtful about overriding start times
         real_virgin.vc_connection_start = datetime.now()
         commit()
@@ -195,12 +194,15 @@ def start_adding_virginity(virgin: Member, voice_state: VoiceState):
 
 @db_session
 def stop_adding_virginity(virgin: Virgin, finish_transaction=True):
-  #time_spent = datetime.now() - virgin.vc_connection_start
-  # virgin.total_vc_time += time_spent.total_seconds()
-  # virgin.total_vc_time_ever += time_spent.total_seconds()
-  virgin.total_vc_time = calculate_time_difference(virgin)
+  currentDatetime = datetime.now()
+  vc_conn_start = virgin.vc_connection_start
+  latest_vc_time = calculate_time_difference(vc_conn_start,currentDatetime)
+  virgin.total_vc_time += latest_vc_time
+  virgin.total_vc_time_ever += virgin.total_vc_time
+
   print(f'{virgin.name} spent {virgin.total_vc_time} in VC')
-  # virgin.virginity_score = 
+  
+  virgin.virginity_score += calc_total_virginity(virgin)
   virgin.vc_connection_start = None
   if finish_transaction:
     commit()
