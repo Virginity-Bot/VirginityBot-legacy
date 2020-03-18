@@ -1,3 +1,3 @@
-0 6 * * *     python daily-reset.py
-0 6 * * TUE   python weekly-reset.py
-0 6 1 * *     python monthly-reset.py
+ 0 6 * * *    python /home/virginitybot/daily-reset.py
+ 0 7 * * TUE  python /home/virginitybot/weekly-reset.py
+30 7 1 * *    python /home/virginitybot/monthly-reset.py
