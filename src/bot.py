@@ -167,7 +167,7 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
       guild = Guild.get(id=str(member.guild.id))
 
       if filter(lambda role: str(role.id) == guild.biggest_virgin_role_id, member.roles):
-        play_entrance_theme(after.channel)
+        await play_entrance_theme(after.channel)
       # TODO: figure out a way to cache this
       # show(bot.guilds[0].roles)
     elif before.channel is not None and after.channel is None:
