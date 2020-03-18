@@ -11,6 +11,8 @@ ENV POSTGRES_PASS password
 ENV POINTS_PER_MINUTE 5
 ENV BOT_SCORE_MULTIPLIER 0.5
 
+RUN apt-get update && apt-get install -y ffmpeg
+
 RUN useradd --create-home virginitybot
 WORKDIR /home/virginitybot
 USER virginitybot
