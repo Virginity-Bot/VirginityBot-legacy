@@ -1,28 +1,22 @@
 import os
 import asyncio
-import http as Http
+import http.client
 import json
 
-import discord
-from discord import *
-from discord.ext import commands
 from dotenv import load_dotenv
 from pony.orm import *
 
 from database import start_orm, get_biggest_virgin, Guild
-# from bot import start_bot, stop_bot, bot
 
 load_dotenv()
 TOKEN = str(os.getenv('DISCORD_TOKEN'))
-
-bot = commands.Bot(command_prefix=('/'))
 
 HOSTNAME = 'discordapp.com'
 API_PATH = f'https://{HOSTNAME}/api'
 
 
 async def award_omega_virgin_roles():
-  con = Http.client.HTTPSConnection(HOSTNAME)
+  con = http.client.HTTPSConnection(HOSTNAME)
   headers = {
       'Content-Type': 'application/json',
       'Content-Length': '0',
@@ -75,20 +69,10 @@ async def award_omega_virgin_roles():
           print('Added role to biggest virgin')
 
 
-@bot.event
-async def on_ready():
-  print(f'{bot.user.name} has connected to Discord!')
-
-
 async def main():
   print('daily reset')
   start_orm()
-  # bot.run(TOKEN)
-  await bot.login(TOKEN)
-  # await bot.connect()
-  print('bot started')
   await award_omega_virgin_roles()
-  await bot.close()
 
 
 if __name__ == '__main__':
