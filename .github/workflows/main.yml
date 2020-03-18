@@ -19,5 +19,8 @@ jobs:
       - name: Publish to Registry
         uses: matootie/github-docker@v2.2.2
         with:
-          imageName: virginitybot/bot
+          repositoryName: virginitybot/bot
+          # imageName: bot
           accessToken: ${{ secrets.DOCKER_RELEASE_ACCESS_TOKEN }}
+
+          docker.pkg.github.com/OWNER/REPOSITORY/IMAGE_NAME:VERSION
