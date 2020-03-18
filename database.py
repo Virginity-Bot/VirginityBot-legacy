@@ -47,6 +47,12 @@ def get_biggest_virgin(guild: str):
 
 
 @db_session
+def get_top_virgins(guild: str, limit=5, exclude_bots=True):
+  # TODO: actually respect exclude_bots
+  return Virgin.select(lambda v: v.guild_id == guild and v.is_bot == False).sort_by(desc(Virgin.virginity_score)).limit(limit)
+
+
+@db_session
 def get_smolest_virgin(guild: str):
   return Virgin.select(lambda v: v.guild_id == guild).sort_by(Virgin.virginity_score).limit(1)[0]
 

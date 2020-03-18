@@ -6,7 +6,7 @@ import re
 from datetime import datetime
 
 import discord
-from discord import Member, VoiceState
+from discord import Member, VoiceState, Embed, Colour
 from discord.ext import commands
 from dotenv import load_dotenv
 from pony.orm import *
@@ -102,9 +102,29 @@ async def topvirgin(ctx):
 async def smolestvirgin(ctx):
   if ctx.message.author == bot.user:
     return
+  await ctx.trigger_typing()
   # smol = get_smolest_virgin(str(ctx.message.guild.id))
   # await ctx.send(f'🏩 {smol.name} 💦')
   await handlesmolestvirgin(ctx)
+
+
+# /leaderboard
+@bot.command(name='leaderboard')
+async def leaderboard(ctx: commands.Context):
+  if ctx.message.author == bot.user:
+    return
+  await ctx.trigger_typing()
+
+  msg = Embed(
+      title=f'Biggest Virgins of {ctx.guild.name}', description='')
+  # msg.color(Colour.from_rgb(255, 41, 255))
+  # msg.add_field(name='field 1', value='value 1')
+  virgins = get_top_virgins(str(ctx.guild.id))
+  with db_session:
+    for i, virgin in enumerate(virgins):
+      msg.description += f'**{i + 1}.** {virgin.name} - {virgin.virginity_score}\n'
+  await ctx.send(embed=msg)
+
 
 # /resetvirginity
 @bot.command(name='resetvirginity')
