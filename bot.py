@@ -6,7 +6,7 @@ import re
 from datetime import datetime
 
 import discord
-from discord import Member, VoiceState, Embed, Colour
+from discord import *
 from discord.ext import commands
 from dotenv import load_dotenv
 from pony.orm import *
@@ -23,9 +23,6 @@ bot = commands.Bot(command_prefix=('/'))
 @bot.event
 async def on_ready():
   print(f'{bot.user.name} has connected to Discord!')
-
-  guilds = bot.guilds
-  voice_channels = []
 
   with db_session:
     for guild in bot.guilds:
@@ -45,6 +42,13 @@ async def on_ready():
                      discriminator=virgin.discriminator,
                      vc_connection_start=datetime.now(), is_bot=virgin.bot)
 
+
+
+@bot.event
+async def on_disconnect():
+  print(f'{bot.user.name} has disconnected from Discord!')
+  # TODO: wrap up all open transactions
+  await voice_client.disconnect()
 # /myvirginity
 @bot.command(name='myvirginity')
 async def myvirginity(ctx):
@@ -230,3 +234,4 @@ def stop_bot():
     for virgin in select(v for v in Virgin if v.vc_connection_start != None)[:]:
       stop_adding_virginity(virgin, finish_transaction=False)
     commit()
+  bot.close()
