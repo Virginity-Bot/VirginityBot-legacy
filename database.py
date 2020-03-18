@@ -15,7 +15,7 @@ db = Database()
 
 
 class Virgin(db.Entity):
-  id = Required(str, index=True, unique=True)
+  id = Required(str, index=True)
   guild_id = Required(str, index=True)
   name = Required(str)
   discriminator = Required(str)
