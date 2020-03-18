@@ -1,8 +1,12 @@
 import atexit
+import logging
 
 from database import start_orm
 from bot import start_bot, stop_bot
 from healthcheck import start_server
+import logger
+
+logger = logging.getLogger('virginity-bot')
 
 
 def main():
@@ -16,7 +20,7 @@ if __name__ == '__main__':
 
 
 def on_exit():
-  print('\nExitting')
+  logger.info('\nExitting')
   stop_bot()
 
 

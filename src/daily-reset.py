@@ -2,11 +2,16 @@ import os
 import asyncio
 import http.client
 import json
+import logging
 
 from dotenv import load_dotenv
 from pony.orm import *
 
+import logger
 from database import start_orm, get_biggest_virgin, Guild
+
+logger = logging.getLogger('virginity-bot')
+
 
 load_dotenv()
 TOKEN = str(os.getenv('DISCORD_TOKEN'))
@@ -30,13 +35,13 @@ async def award_omega_virgin_roles():
         continue
       else:
         omega_virgin = get_biggest_virgin(guild.id)
-        print(f'{omega_virgin.name} is {guild.name}\'s biggest virgin')
+        logger.info(f'{omega_virgin.name} is {guild.name}\'s biggest virgin')
 
         con.request(
             'DELETE', f'{API_PATH}/guilds/{guild.id}/roles/{guild.biggest_virgin_role_id}', headers=headers)
         res = con.getresponse()
         if res.getcode() == 204:
-          print('Deleted old role')
+          logger.info('Deleted old role')
         con.close()
 
         body = json.dumps({
@@ -55,9 +60,9 @@ async def award_omega_virgin_roles():
         if res.getcode() == 200:
           guild.biggest_virgin_role_id = new_role['id']
           commit()
-          print('Created new role')
+          logger.info('Created new role')
         else:
-          print('Failed to create role')
+          logger.error('Failed to create role')
           raise Exception('Failed to create role')
 
         headers['Content-Length'] = '0'
@@ -66,11 +71,11 @@ async def award_omega_virgin_roles():
         res = con.getresponse()
         con.close()
         if res.getcode() == 204:
-          print('Added role to biggest virgin')
+          logger.info('Added role to biggest virgin')
 
 
 async def main():
-  print('daily reset')
+  logger.info('Running daily reset')
   start_orm()
   await award_omega_virgin_roles()
 

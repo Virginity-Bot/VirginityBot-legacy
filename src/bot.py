@@ -5,6 +5,7 @@ import functools
 import re
 from datetime import datetime
 import asyncio
+import logging
 
 import discord
 from discord import *
@@ -18,24 +19,28 @@ from logic import calc_total_virginity
 load_dotenv()
 TOKEN = str(os.getenv('DISCORD_TOKEN'))
 
+logger = logging.getLogger('virginity-bot')
+
 bot = commands.Bot(command_prefix=('/'))
 
 voice_client: VoiceClient = None
 
 
 @bot.event
+async def on_connect():
+  logger.info(f'{bot.user.name} has connected to Discord!')
+
+
+@bot.event
 async def on_ready():
-  print(f'{bot.user.name} has connected to Discord!')
+  logger.info(f'{bot.user.name} is ready!')
 
   with db_session:
     for guild in bot.guilds:
       for channel in guild.channels:
-        # print(f'{channel},{channel.type}')
         if channel.type == discord.ChannelType.voice and channel != guild.afk_channel:
-          # virgins.append(channel.members)
           for virgin in channel.members:
             if Virgin.exists(guild_id=str(guild.id), id=str(virgin.id)):
-              print('User already registered')
               virgin = Virgin.get(
                   guild_id=str(guild.id), id=str(virgin.id))
               virgin.vc_connection_start = datetime.now()
@@ -48,9 +53,10 @@ async def on_ready():
 
 @bot.event
 async def on_disconnect():
-  print(f'{bot.user.name} has disconnected from Discord!')
+  logger.warn(f'{bot.user.name} has disconnected from Discord!')
   # TODO: wrap up all open transactions
-  await voice_client.disconnect()
+  if voice_client != None:
+    await voice_client.disconnect()
 
 # /myvirginity
 @bot.command(name='myvirginity')
@@ -161,17 +167,17 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
   # Virgin connects to VC
   with db_session:
     if before.channel is None and after.channel is not None:
-      print(f'{member.name} connected')
+      logger.info(f'{member.name} connected')
       start_adding_virginity(member, after)
 
+      # TODO: figure out a way to cache this
       guild = Guild.get(id=str(member.guild.id))
 
       if filter(lambda role: str(role.id) == guild.biggest_virgin_role_id, member.roles):
+        logger.info(f'biggest virgin has connected')
         await play_entrance_theme(after.channel)
-      # TODO: figure out a way to cache this
-      # show(bot.guilds[0].roles)
     elif before.channel is not None and after.channel is None:
-      print(f'{member.name} disconnected')
+      logger.info(f'{member.name} disconnected')
       virgin = member_to_virgin(member)
       if virgin != None:
         stop_adding_virginity(virgin)
@@ -180,7 +186,7 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
         (after.self_mute == True or after.mute == True)) or (
         (before.self_deaf == False or before.deaf == False) and
             (after.self_deaf == True or after.mute == True)):
-      print(f'{member.name} muted')
+      logger.info(f'{member.name} muted')
       virgin = member_to_virgin(member)
       if virgin != None:
         stop_adding_virginity(virgin)
@@ -189,7 +195,7 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
         (after.self_mute == False or after.mute == False)) or (
         (before.self_deaf == True or before.deaf == True) and
             (after.self_deaf == False or after.mute == False)):
-      print(f'{member.name} unmuted')
+      logger.info(f'{member.name} unmuted')
       start_adding_virginity(member, after)
 
 
@@ -201,7 +207,6 @@ def member_to_virgin(member: Member):
 
 @db_session
 def start_adding_virginity(virgin: Member, voice_state: VoiceState):
-  show(virgin)
   if not voice_state.afk:
     if voice_state.self_mute == False and voice_state.self_deaf == False:
       if Virgin.exists(guild_id=str(virgin.guild.id), id=str(virgin.id)):
@@ -220,8 +225,9 @@ def start_adding_virginity(virgin: Member, voice_state: VoiceState):
 def stop_adding_virginity(virgin: Virgin, finish_transaction=True):
   time_spent = datetime.now() - virgin.vc_connection_start
   if (time_spent.total_seconds() < 0):
-    print('🚨🚨🚨 OH SHIT 🚨🚨🚨')
-  print(f'{virgin.name} spent {time_spent} in VC')
+    logger.error(
+        f'🚨🚨🚨 OH SHIT 🚨🚨🚨 negative seconds {time_spent.total_seconds()}')
+  logger.info(f'{virgin.name} spent {time_spent} in VC')
   virgin.total_vc_time += time_spent.total_seconds()
   virgin.total_vc_time_ever += time_spent.total_seconds()
   virgin.virginity_score = calc_total_virginity(virgin)
@@ -243,9 +249,9 @@ async def handlesmolestvirgin(ctx):
 async def play_entrance_theme(channel):
   voice_client = await channel.connect()
   greeting = FFmpegPCMAudio('./music.opus')
-  print(datetime.now())
+  logger.info('starting entrance theme')
   voice_client.play(
-      greeting, after=lambda e: print(f'🚨 FINISHED PLAYING {datetime.now()}', e))
+      greeting, after=lambda e: logger.info(f'🚨 finished entrance theme {e}'))
   while voice_client.is_playing():
     await asyncio.sleep(1)
   await voice_client.disconnect()
