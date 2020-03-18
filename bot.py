@@ -4,6 +4,7 @@ import random
 import functools
 import re
 from datetime import datetime
+import asyncio
 
 import discord
 from discord import *
@@ -18,6 +19,8 @@ load_dotenv()
 TOKEN = str(os.getenv('DISCORD_TOKEN'))
 
 bot = commands.Bot(command_prefix=('/'))
+
+voice_client: VoiceClient = None
 
 
 @bot.event
@@ -49,6 +52,7 @@ async def on_disconnect():
   print(f'{bot.user.name} has disconnected from Discord!')
   # TODO: wrap up all open transactions
   await voice_client.disconnect()
+
 # /myvirginity
 @bot.command(name='myvirginity')
 async def myvirginity(ctx):
@@ -220,6 +224,17 @@ async def handlesmolestvirgin(ctx):
   return await ctx.send(f'🏩 {smol.name} with {smol.virginity_score} {pluralize("point", smol.virginity_score)} 💦')
 
 
+async def play_sound(channel):
+  voice_client = await channel.connect()
+  greeting = FFmpegPCMAudio('./music.opus')
+  print(datetime.now())
+  voice_client.play(
+      greeting, after=lambda e: print(f'🚨 FINISHED PLAYING {datetime.now()}', e))
+  while voice_client.is_playing():
+    await asyncio.sleep(1)
+  await voice_client.disconnect()
+
+
 def pluralize(non_plural: str, val: int):
   return non_plural + ('s' if val != 1 else '')
 
@@ -229,9 +244,10 @@ def start_bot():
 
 
 def stop_bot():
-  # bot.stop()
   with db_session:
     for virgin in select(v for v in Virgin if v.vc_connection_start != None)[:]:
       stop_adding_virginity(virgin, finish_transaction=False)
     commit()
+  if voice_client != None:
+    voice_client.disconnect()
   bot.close()
