@@ -21,4 +21,4 @@ jobs:
           name: virginitybot/bot
           registry: docker.pkg.github.com
           username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          password: ${{ secrets.DOCKER_RELEASE_ACCESS_TOKEN }}
