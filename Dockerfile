@@ -11,7 +11,7 @@ ENV POSTGRES_PASS password
 ENV POINTS_PER_MINUTE 5
 ENV BOT_SCORE_MULTIPLIER 0.5
 
-RUN apt-get update && apt-get install -y ffmpeg
+RUN apt-get update && apt-get install -y ffmpeg cron
 
 # TODO: move this to another container
 COPY crontab /etc/cron.d/virgin-cron
@@ -26,7 +26,7 @@ COPY Dockerfile ./
 COPY README.md ./
 COPY LICENSE ./
 COPY requirements.txt ./
-COPY *.py ./
+COPY src/*.py ./
 
 RUN pip install -r requirements.txt
 
