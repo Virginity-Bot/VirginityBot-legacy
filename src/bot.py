@@ -4,27 +4,27 @@ import random
 import functools
 import re
 from datetime import datetime
+import asyncio
 
 import discord
-from discord import Member, VoiceState, Embed, Colour
+from discord import *
 from discord.ext import commands
 from dotenv import load_dotenv
 from pony.orm import *
 
 from database import *
-from logic import calc_total_virginity
 
 load_dotenv()
 TOKEN = str(os.getenv('DISCORD_TOKEN'))
 
 bot = commands.Bot(command_prefix=('/'))
 
+voice_client: VoiceClient = None
+
+
 @bot.event
 async def on_ready():
   print(f'{bot.user.name} has connected to Discord!')
-
-  guilds = bot.guilds
-  voice_channels = []
 
   with db_session:
     for guild in bot.guilds:
@@ -44,13 +44,19 @@ async def on_ready():
                      discriminator=virgin.discriminator,
                      vc_connection_start=datetime.now(), is_bot=virgin.bot)
 
+
+@bot.event
+async def on_disconnect():
+  print(f'{bot.user.name} has disconnected from Discord!')
+  # TODO: wrap up all open transactions
+  await voice_client.disconnect()
+
 # /myvirginity
 @bot.command(name='myvirginity')
 async def myvirginity(ctx):
   if ctx.message.author == bot.user:
     return
   await ctx.trigger_typing()
-
   with db_session:
     virgin = Virgin.get(guild_id=str(ctx.message.guild.id),
                         id=str(ctx.message.author.id))
@@ -75,8 +81,8 @@ async def checkvirginity(ctx):
     return await ctx.send('User specification failed')
   else:
     with db_session:
-      virgin = Virgin.get(guild_id=str(
-          ctx.message.guild.id), id=match.group(1))
+      virgin = Virgin.get(guild_id=str(ctx.message.guild.id), 
+                          id=match.group(1))
       if not virgin:
         return await ctx.send('Virgin not found')
       else:
@@ -104,7 +110,7 @@ async def topvirgin(ctx):
 
 # /smolestvirgin
 @bot.command(name='smolestvirgin')
-async def smolestvirgin(ctx):
+async def smolestvirgi_n(ctx):
   if ctx.message.author == bot.user:
     return
   await ctx.trigger_typing()
@@ -157,14 +163,20 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
       virgin = member_to_virgin(member)
       if virgin != None:
         stop_adding_virginity(virgin)
-
-    elif (before.self_mute == False and after.self_mute == True) or (before.self_deaf == False and after.self_deaf == True):
+    elif (
+        (before.self_mute == False or before.mute == False) and
+        (after.self_mute == True or after.mute == True)) or (
+        (before.self_deaf == False or before.deaf == False) and
+            (after.self_deaf == True or after.mute == True)):
       print(f'{member.name} muted')
       virgin = member_to_virgin(member)
       if virgin != None:
         stop_adding_virginity(virgin)
-
-    elif (before.self_mute == True and after.self_mute == False) or (before.self_deaf == True and after.self_deaf == False):
+    elif (
+        (before.self_mute == True or before.mute == True) and
+        (after.self_mute == False or after.mute == False)) or (
+        (before.self_deaf == True or before.deaf == True) and
+            (after.self_deaf == False or after.mute == False)):
       print(f'{member.name} unmuted')
       start_adding_virginity(member, after)
 
@@ -196,13 +208,16 @@ def start_adding_virginity(virgin: Member, voice_state: VoiceState):
 def stop_adding_virginity(virgin: Virgin, finish_transaction=True):
   currentDatetime = datetime.now()
   vc_conn_start = virgin.vc_connection_start
-  latest_vc_time = calculate_time_difference(vc_conn_start,currentDatetime)
+  latest_vc_time = calc_time_difference(vc_conn_start,currentDatetime)
   virgin.total_vc_time += latest_vc_time
   virgin.total_vc_time_ever += virgin.total_vc_time
 
   print(f'{virgin.name} spent {virgin.total_vc_time} in VC')
   
-  virgin.virginity_score += calc_total_virginity(virgin)
+  virgin.virginity_score = calc_total_virginity(virgin)
+  if (latest_vc_time< 0):
+    print(f'🚨🚨🚨 OH SHIT {virgin.name} has NEGATIVE VIRGINITY 🚨🚨🚨')
+ 
   virgin.vc_connection_start = None
   if finish_transaction:
     commit()
@@ -218,6 +233,17 @@ async def handlesmolestvirgin(ctx):
   return await ctx.send(f'🏩 {smol.name} with {smol.virginity_score} {pluralize("point", smol.virginity_score)} 💦')
 
 
+async def play_sound(channel):
+  voice_client = await channel.connect()
+  greeting = FFmpegPCMAudio('./music.opus')
+  print(datetime.now())
+  voice_client.play(
+      greeting, after=lambda e: print(f'🚨 FINISHED PLAYING {datetime.now()}', e))
+  while voice_client.is_playing():
+    await asyncio.sleep(1)
+  await voice_client.disconnect()
+
+
 def pluralize(non_plural: str, val: int):
   return non_plural + ('s' if val != 1 else '')
 
@@ -227,8 +253,10 @@ def start_bot():
 
 
 def stop_bot():
-  # bot.stop()
   with db_session:
     for virgin in select(v for v in Virgin if v.vc_connection_start != None)[:]:
       stop_adding_virginity(virgin, finish_transaction=False)
     commit()
+  if voice_client != None:
+    voice_client.disconnect()
+  bot.close()

@@ -32,6 +32,7 @@ class Guild(db.Entity):
   id = PrimaryKey(str)
   name = Required(str)
   # virgins = Set(Virgin)
+  afk_channel_id = Optional(str)
 
 
 
@@ -64,6 +65,18 @@ def get_users_virginity_by_id(guild: str, ID: str):
 
 
 @db_session
-def calculate_time_difference(start: datetime, end: datetime):
+def calc_time_difference(start: datetime, end: datetime):
+  if start == None:
+    start = end
   secdiff = float(db.get(f'SELECT DateDiff (\'s\',\'{start}\',\'{end}\');'))
   return secdiff
+
+@db_session
+def calc_total_virginity(virgin: Virgin):
+  currentDatetime = datetime.now()
+  vc_conn_start = virgin.vc_connection_start
+  virgin_id = virgin.id
+  guild_id = virgin.guild_id
+  latest_vc_time = calc_time_difference(vc_conn_start,currentDatetime)
+  virgScore = int(db.get(f'SELECT calc_total_virginity (\'{virgin_id}\', \'{guild_id}\', \'{latest_vc_time}\');'))
+  return virgScore
