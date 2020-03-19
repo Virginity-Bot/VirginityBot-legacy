@@ -27,6 +27,7 @@ COPY README.md ./
 COPY LICENSE ./
 COPY requirements.txt ./
 COPY src/*.py ./
+COPY assets/ ./assets
 
 RUN pip install -r requirements.txt
 
