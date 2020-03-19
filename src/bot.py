@@ -179,7 +179,7 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
     elif before.channel is not None and after.channel is None:
       logger.info(f'{member.name} disconnected')
       virgin = member_to_virgin(member)
-      if virgin != None:
+      if virgin != None and virgin.vc_connection_start != None:
         stop_adding_virginity(virgin)
     elif (
         (before.self_mute == False or before.mute == False) and
@@ -188,7 +188,7 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
             (after.self_deaf == True or after.mute == True)):
       logger.info(f'{member.name} muted')
       virgin = member_to_virgin(member)
-      if virgin != None:
+      if virgin != None and virgin.vc_connection_start != None:
         stop_adding_virginity(virgin)
     elif (
         (before.self_mute == True or before.mute == True) and
