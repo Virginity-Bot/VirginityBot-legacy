@@ -39,12 +39,12 @@ async def award_omega_virgin_roles():
           logger.info('Deleted old role')
 
         body = {
-            'name': 'Chonkiest Virgin the World has Ever Seen',
+            'name': 'Chonkiest Virgin the World Has Ever Seen',
             'color': '12911440',
             'hoist': True,
             'mentionable': True
         }
-        res = s.post(f'{API_PATH}/guilds/{guild.id}/roles', data=body)
+        res = s.post(f'{API_PATH}/guilds/{guild.id}/roles', json=body)
         new_role = res.json()
         if res.status_code == 200:
           guild.biggest_virgin_role_id = new_role['id']
