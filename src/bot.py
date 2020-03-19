@@ -14,7 +14,6 @@ from dotenv import load_dotenv
 from pony.orm import *
 
 from database import *
-from logic import calc_total_virginity
 
 load_dotenv()
 TOKEN = str(os.getenv('DISCORD_TOKEN'))
@@ -64,7 +63,6 @@ async def myvirginity(ctx):
   if ctx.message.author == bot.user:
     return
   await ctx.trigger_typing()
-
   with db_session:
     virgin = Virgin.get(guild_id=str(ctx.message.guild.id),
                         id=str(ctx.message.author.id))
@@ -89,8 +87,8 @@ async def checkvirginity(ctx):
     return await ctx.send('User specification failed')
   else:
     with db_session:
-      virgin = Virgin.get(guild_id=str(
-          ctx.message.guild.id), id=match.group(1))
+      virgin = Virgin.get(guild_id=str(ctx.message.guild.id),
+                          id=match.group(1))
       if not virgin:
         return await ctx.send('Virgin not found')
       else:
@@ -104,7 +102,6 @@ async def biggestvirgin(ctx):
   if ctx.message.author == bot.user:
     return
   await ctx.trigger_typing()
-
   # TODO: update virginity_score for all connected users before display
   await handlebiggestvirgin(ctx)
 
@@ -114,18 +111,15 @@ async def topvirgin(ctx):
   if ctx.message.author == bot.user:
     return
   await ctx.trigger_typing()
-
   # TODO: update virginity_score for all connected users before display
   await handlebiggestvirgin(ctx)
 
 # /smolestvirgin
 @bot.command(name='smolestvirgin')
-async def smolestvirgin(ctx):
+async def smolestvirgi_n(ctx):
   if ctx.message.author == bot.user:
     return
   await ctx.trigger_typing()
-  # smol = get_smolest_virgin(str(ctx.message.guild.id))
-  # await ctx.send(f'🏩 {smol.name} 💦')
   await handlesmolestvirgin(ctx)
 
 
@@ -210,8 +204,8 @@ def start_adding_virginity(virgin: Member, voice_state: VoiceState):
   if not voice_state.afk:
     if voice_state.self_mute == False and voice_state.self_deaf == False:
       if Virgin.exists(guild_id=str(virgin.guild.id), id=str(virgin.id)):
-        real_virgin = Virgin.get(
-            guild_id=str(virgin.guild.id), id=str(virgin.id))
+        real_virgin = Virgin.get(guild_id=str(virgin.guild.id),
+                                 id=str(virgin.id))
         # TODO: be more thoughtful about overriding start times
         real_virgin.vc_connection_start = datetime.now()
         commit()
@@ -223,14 +217,19 @@ def start_adding_virginity(virgin: Member, voice_state: VoiceState):
 
 @db_session
 def stop_adding_virginity(virgin: Virgin, finish_transaction=True):
-  time_spent = datetime.now() - virgin.vc_connection_start
-  if (time_spent.total_seconds() < 0):
-    logger.error(
-        f'🚨🚨🚨 OH SHIT 🚨🚨🚨 negative seconds {time_spent.total_seconds()}')
-  logger.info(f'{virgin.name} spent {time_spent} in VC')
-  virgin.total_vc_time += time_spent.total_seconds()
-  virgin.total_vc_time_ever += time_spent.total_seconds()
+  currentDatetime = datetime.now()
+  vc_conn_start = virgin.vc_connection_start
+  latest_vc_time = calc_time_difference(vc_conn_start, currentDatetime)
+  if (latest_vc_time < 0):
+    logger.error(f'🚨🚨🚨 OH SHIT {virgin.name} has NEGATIVE VIRGINITY 🚨🚨🚨')
+
+  virgin.total_vc_time += latest_vc_time
+  virgin.total_vc_time_ever += latest_vc_time
+
+  print(f'{virgin.name} spent {virgin.total_vc_time} in VC')
+
   virgin.virginity_score = calc_total_virginity(virgin)
+
   virgin.vc_connection_start = None
   if finish_transaction:
     commit()

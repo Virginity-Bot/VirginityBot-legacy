@@ -36,6 +36,7 @@ class Guild(db.Entity):
   biggest_virgin_role_id = Optional(str)
 
 
+
 def start_orm():
   db.bind(provider='postgres', host=POSTGRES_HOST, port=POSTGRES_PORT,
           user=POSTGRES_USER, password=POSTGRES_PASS)
@@ -62,3 +63,21 @@ def get_smolest_virgin(guild: str):
 @db_session
 def get_users_virginity_by_id(guild: str, ID: str):
   return Virgin.get(guild_id=guild, id=ID)
+
+
+@db_session
+def calc_time_difference(start: datetime, end: datetime):
+  if start == None:
+    start = end
+  secdiff = float(db.get(f'SELECT DateDiff (\'s\',\'{start}\',\'{end}\');'))
+  return secdiff
+
+@db_session
+def calc_total_virginity(virgin: Virgin):
+  currentDatetime = datetime.now()
+  vc_conn_start = virgin.vc_connection_start
+  virgin_id = virgin.id
+  guild_id = virgin.guild_id
+  latest_vc_time = calc_time_difference(vc_conn_start,currentDatetime)
+  virgScore = int(db.get(f'SELECT calc_total_virginity (\'{virgin_id}\', \'{guild_id}\', \'{latest_vc_time}\');'))
+  return virgScore

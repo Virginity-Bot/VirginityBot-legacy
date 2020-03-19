@@ -26,3 +26,7 @@ https://discordapp.com/developers/applications/688470281320267800/bot
 6. smallest virgin should exclude people who aren't regulars
 
 https://discordapp.com/api/oauth2/authorize?client_id=618030986986389504&permissions=271871040&scope=bot
+
+### SQL
+
+- Calculate time to add
