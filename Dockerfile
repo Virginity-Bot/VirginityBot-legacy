@@ -14,6 +14,7 @@ ENV BOT_SCORE_MULTIPLIER 0.5
 RUN apt-get update && apt-get install -y ffmpeg cron
 
 # TODO: move this to another container
+# TODO: make this run as non-root
 COPY crontab /etc/cron.d/virgin-cron
 RUN chmod 0644 /etc/cron.d/virgin-cron
 RUN service cron start

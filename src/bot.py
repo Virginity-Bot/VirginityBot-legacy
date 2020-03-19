@@ -163,13 +163,6 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
     if before.channel is None and after.channel is not None:
       logger.info(f'{member.name} connected')
       start_adding_virginity(member, after)
-
-      # TODO: figure out a way to cache this
-      guild = Guild.get(id=str(member.guild.id))
-
-      if len(list(filter(lambda role: str(role.id) == guild.biggest_virgin_role_id, member.roles))) >= 1:
-        logger.info(f'biggest virgin has connected')
-        await play_entrance_theme(after.channel)
     elif before.channel is not None and after.channel is None:
       logger.info(f'{member.name} disconnected')
       virgin = member_to_virgin(member)
@@ -191,6 +184,14 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
             (after.self_deaf == False or after.mute == False)):
       logger.info(f'{member.name} unmuted')
       start_adding_virginity(member, after)
+
+    if after.channel is not None:
+      # TODO: figure out a way to cache this
+      guild = Guild.get(id=str(member.guild.id))
+
+      if len(list(filter(lambda role: str(role.id) == guild.biggest_virgin_role_id, member.roles))) >= 1:
+        logger.info(f'biggest virgin has connected')
+        await play_entrance_theme(after.channel)
 
 
 @db_session

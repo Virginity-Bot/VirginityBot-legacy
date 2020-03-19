@@ -56,6 +56,14 @@ async def award_omega_virgin_roles():
           logger.error(res.text)
           raise Exception('Failed to create role')
 
+        body = {
+            'id': guild.biggest_virgin_role_id,
+            'position': 1
+        }
+        res = s.patch(f'{API_PATH}/guilds/{guild.id}/roles', json=body)
+        if res.status_code == 200:
+          logger.info('Set role to position 1')
+
         res = s.put(
             f'{API_PATH}/guilds/{guild.id}/members/{omega_virgin.id}/roles/{guild.biggest_virgin_role_id}')
         if res.status_code == 204:
