@@ -248,10 +248,10 @@ async def handlesmolestvirgin(ctx):
 
 async def play_entrance_theme(channel):
   voice_client = await channel.connect()
-  greeting = FFmpegPCMAudio('./music.opus')
+  greeting = FFmpegPCMAudio('./assets/entrance_theme.opus')
   logger.info('starting entrance theme')
   voice_client.play(
-      greeting, after=lambda e: logger.info(f'🚨 finished entrance theme {e}'))
+      greeting, after=lambda e: logger.info(f'🚨 finished entrance theme'))
   while voice_client.is_playing():
     await asyncio.sleep(1)
   await voice_client.disconnect()
