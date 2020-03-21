@@ -3,7 +3,7 @@ import os
 import random
 import functools
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 import asyncio
 import logging
 
@@ -243,7 +243,7 @@ def stop_adding_virginity(virgin: Virgin, finish_transaction=True):
   virgin.total_vc_time += latest_vc_time
   virgin.total_vc_time_ever += latest_vc_time
 
-  print(f'{virgin.name} spent {virgin.total_vc_time} in VC')
+  print(f'{virgin.name} spent {timedelta(seconds=latest_vc_time)} in VC')
 
   virgin.virginity_score = calc_total_virginity(virgin)
 
