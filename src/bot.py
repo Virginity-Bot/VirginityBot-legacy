@@ -168,6 +168,14 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
       virgin = member_to_virgin(member)
       if virgin != None and virgin.vc_connection_start != None:
         stop_adding_virginity(virgin)
+    elif after.afk:
+      logger.info(f'{member.name} went AFK')
+      virgin = member_to_virgin(member)
+      if virgin != None and virgin.vc_connection_start != None:
+        stop_adding_virginity(virgin)
+    elif before.afk and after.channel is not None:
+      logger.info(f'{member.name} is not AFK')
+      start_adding_virginity(member, after)
     elif (
         (before.self_mute == False or before.mute == False) and
         (after.self_mute == True or after.mute == True)) or (
