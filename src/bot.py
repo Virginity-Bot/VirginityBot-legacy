@@ -185,7 +185,15 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
       logger.info(f'{member.name} unmuted')
       start_adding_virginity(member, after)
 
-    if after.channel is not None:
+    # Play entrance music
+    if not after.afk and (
+        (before.channel is None and after.channel is not None) or
+        (after.channel is not None and
+            (before.self_mute == after.self_mute and
+             before.self_deaf == after.self_deaf and
+             before.self_stream == after.self_stream)
+         )
+    ):
       # TODO: figure out a way to cache this
       guild = Guild.get(id=str(member.guild.id))
 
