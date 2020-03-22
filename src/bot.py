@@ -4,7 +4,8 @@ import random
 import functools
 import re
 import array
-from datetime import datetime
+
+from datetime import datetime, timedelta
 import asyncio
 import logging
 
@@ -190,6 +191,14 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
       virgin = member_to_virgin(member)
       if virgin != None and virgin.vc_connection_start != None:
         stop_adding_virginity(virgin)
+    elif after.afk:
+      logger.info(f'{member.name} went AFK')
+      virgin = member_to_virgin(member)
+      if virgin != None and virgin.vc_connection_start != None:
+        stop_adding_virginity(virgin)
+    elif before.afk and after.channel is not None:
+      logger.info(f'{member.name} is not AFK')
+      start_adding_virginity(member, after)
     elif (
         (before.self_mute == False or before.mute == False) and
         (after.self_mute == True or after.mute == True)) or (
@@ -207,7 +216,15 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
       logger.info(f'{member.name} unmuted')
       start_adding_virginity(member, after)
 
-    if after.channel is not None:
+    # Play entrance music
+    if not after.afk and (
+        (before.channel is None and after.channel is not None) or
+        (after.channel is not None and
+            (before.self_mute == after.self_mute and
+             before.self_deaf == after.self_deaf and
+             before.self_stream == after.self_stream)
+         )
+    ):
       # TODO: figure out a way to cache this
       guild = Guild.get(id=str(member.guild.id))
 
@@ -249,7 +266,7 @@ def stop_adding_virginity(virgin: Virgin, finish_transaction=True):
   virgin.total_vc_time += latest_vc_time
   virgin.total_vc_time_ever += latest_vc_time
 
-  print(f'{virgin.name} spent {virgin.total_vc_time} in VC')
+  print(f'{virgin.name} spent {timedelta(seconds=latest_vc_time)} in VC')
 
   virgin.virginity_score = calc_total_virginity(virgin)
 
