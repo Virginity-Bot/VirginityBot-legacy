@@ -1,3 +1,4 @@
- 0 13 * * *    python /home/virginitybot/daily-reset.py
- 0 14 * * TUE  python /home/virginitybot/weekly-reset.py
-30 14 1 * *    python /home/virginitybot/monthly-reset.py
+# m h  dom mon dow   user           command
+  0 13  *   *   *    virginitybot   python /home/virginitybot/daily-reset.py
+  0 14  *   *  TUE   virginitybot   python /home/virginitybot/weekly-reset.py
+ 30 14  1   *   *    virginitybot   python /home/virginitybot/monthly-reset.py
