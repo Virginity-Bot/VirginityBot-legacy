@@ -50,14 +50,19 @@ def get_biggest_virgin(guild: str):
 
 
 @db_session
-def get_top_virgins(guild: str, limit=5, exclude_bots=True):
+def get_smolest_virgin(guild: str):
+  return Virgin.select(lambda v: v.guild_id == guild).sort_by(Virgin.virginity_score).limit(1)[0]
+
+
+@db_session
+def get_top_virgins(guild: str, limit=10, exclude_bots=True):
   # TODO: actually respect exclude_bots
   return Virgin.select(lambda v: v.guild_id == guild and v.is_bot == False).sort_by(desc(Virgin.virginity_score)).limit(limit)
 
 
 @db_session
-def get_smolest_virgin(guild: str):
-  return Virgin.select(lambda v: v.guild_id == guild).sort_by(Virgin.virginity_score).limit(1)[0]
+def get_active_virgins(guild: str, exclude_bots=True):
+  return Virgin.select(lambda v: v.guild_id == guild and v.vc_connection_start != None)
 
 
 @db_session
@@ -81,3 +86,13 @@ def calc_total_virginity(virgin: Virgin):
   latest_vc_time = calc_time_difference(vc_conn_start,currentDatetime)
   virgScore = int(db.get(f'SELECT calc_total_virginity (\'{virgin_id}\', \'{guild_id}\', \'{latest_vc_time}\');'))
   return virgScore
+
+@db_session
+def calc_total_virginity_ever(virgin: Virgin):
+  currentDateTime = datetime.now()
+  vc_conn_start = virgin.vc_connection_start
+  virgin_id = virgin.id
+  guild_id = virgin.guild_id
+  latest_vc_time = calc_time_difference(vc_conn_start,currentDatetime)
+  virgScoreEver = int(db.get(f'SELECT calc_total_virginity_ever (\'{virgin_id}\', \'{guild_id}\', \'{latest_vc_time}\');'))
+  return virgScoreEver

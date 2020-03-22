@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION DateDiff (units VARCHAR(30), start_t TIMESTAMP, end_t TIMESTAMP) 
+CREATE OR REPLACE FUNCTION DateDiff (units VARCHAR(30), start_t TIMESTAMP WITH TIME ZONE, end_t TIMESTAMP WITH TIME ZONE) 
   RETURNS double precision AS $$
 DECLARE
   diff_interval INTERVAL; 
@@ -49,8 +49,7 @@ BEGIN
 
 	diff = diff * 60 + DATE_PART('second', diff_interval);
   
-	IF units IN ('s', 'second') THEN
-  	RETURN diff;
-  END IF;
+	RETURN diff;
+
 END;
 $$ LANGUAGE 'plpgsql';
