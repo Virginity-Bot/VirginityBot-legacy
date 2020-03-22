@@ -3,6 +3,7 @@ import os
 import random
 import functools
 import re
+import array
 from datetime import datetime
 import asyncio
 import logging
@@ -71,9 +72,9 @@ async def myvirginity(ctx):
                       name=ctx.message.author.name, discriminator=ctx.message.author.discriminator,
                       is_bot=ctx.message.author.bot)
       return await ctx.send(f'{virgin.name} ain\'t no virgin. (at least not yet)')
-    virgin.virginity_score = calc_total_virginity(virgin)
+    virginity_score = calc_total_virginity(virgin)
     commit()
-    return await ctx.send(virgin.virginity_score)
+    return await ctx.send(virginity_score)
 
 # /checkvirgininty
 @bot.command(name='checkvirginity')
@@ -92,12 +93,12 @@ async def checkvirginity(ctx):
       if not virgin:
         return await ctx.send('Virgin not found')
       else:
-        virgin.virginity_score = calc_total_virginity(virgin)
+        virginity_score = calc_total_virginity(virgin)
         commit()
-        return await ctx.send(virgin.virginity_score)
+        return await ctx.send(virginity_score)
 
 # /biggestvirgin
-@bot.command(name='biggestvirgin')
+@bot.command(name='biggestvcvirgin')
 async def biggestvirgin(ctx):
   if ctx.message.author == bot.user:
     return
@@ -106,7 +107,7 @@ async def biggestvirgin(ctx):
   await handlebiggestvirgin(ctx)
 
 # /topvirgin
-@bot.command(name='topvirgin')
+@bot.command(name='topvcvirgin')
 async def topvirgin(ctx):
   if ctx.message.author == bot.user:
     return
@@ -115,7 +116,7 @@ async def topvirgin(ctx):
   await handlebiggestvirgin(ctx)
 
 # /smolestvirgin
-@bot.command(name='smolestvirgin')
+@bot.command(name='smolestvcvirgin')
 async def smolestvirgi_n(ctx):
   if ctx.message.author == bot.user:
     return
@@ -130,14 +131,35 @@ async def leaderboard(ctx: commands.Context):
     return
   await ctx.trigger_typing()
 
+  calculatedVCVirgs = []
+  combinedTop = []
+  topVirgins = get_top_virgins(str(ctx.guild.id))
+  vcVirgins = get_active_virgins(str(ctx.guild.id))
+  
+  with db_session:
+    for vcVirg in vcVirgins:
+      virgScore = calc_total_virginity(vcVirg)
+      calculatedVCVirgs.append((vcVirg.id, vcVirg.name, virgScore))
+
+    for topVirg in topVirgins:
+      isAdded = False
+      for calcVirg in calculatedVCVirgs:
+        if topVirg.id == calcVirg[0]:
+          isAdded = True
+          combinedTop.append(calcVirg)
+          break
+      if not isAdded:
+        combinedTop.append((topVirg.id, topVirg.name, topVirg.virginity_score))
+
+  combinedTop = sorted(combinedTop, key=lambda x: x[2], reverse=True)
+  logger.info(combinedTop)
+
   msg = Embed(
       title=f'Biggest Virgins of {ctx.guild.name}', description='')
   # msg.color(Colour.from_rgb(255, 41, 255))
   # msg.add_field(name='field 1', value='value 1')
-  virgins = get_top_virgins(str(ctx.guild.id))
-  with db_session:
-    for i, virgin in enumerate(virgins):
-      msg.description += f'**{i + 1}.** {virgin.name} - {virgin.virginity_score}\n'
+  for i, tVirgin in enumerate(combinedTop):
+    msg.description += f'**{i + 1}.** {tVirgin[1]} - {tVirgin[2]}\n'
   await ctx.send(embed=msg)
 
 
@@ -237,13 +259,43 @@ def stop_adding_virginity(virgin: Virgin, finish_transaction=True):
 
 
 async def handlebiggestvirgin(ctx):
-  bigun = get_biggest_virgin(str(ctx.message.guild.id))
-  return await ctx.send(f'🎉 {bigun.name} with {bigun.virginity_score} {pluralize("point", bigun.virginity_score)} :nun:')
+  bigunList = []
+
+  with db_session:
+    for guild in bot.guilds:
+      if(ctx.message.guild.id == guild.id):
+        for channel in guild.channels:
+          if channel.type == discord.ChannelType.voice and channel != guild.afk_channel:
+            for virgin in channel.members:
+              if Virgin.exists(guild_id=str(guild.id), id=str(virgin.id)):
+                bigun = Virgin.get(
+                    guild_id=str(guild.id), id=str(virgin.id))
+                bname = bigun.name
+                virgScore = calc_total_virginity(bigun)
+                bigunList.append((bname,virgScore))
+  
+  bigunList = sorted(bigunList, key=lambda x: x[1], reverse=True)
+  return await ctx.send(f'🏩 {bigunList[0][0]} with {bigunList[0][1]} {pluralize("point", bigunList[0][1])} 💦')
 
 
 async def handlesmolestvirgin(ctx):
-  smol = get_smolest_virgin(str(ctx.message.guild.id))
-  return await ctx.send(f'🏩 {smol.name} with {smol.virginity_score} {pluralize("point", smol.virginity_score)} 💦')
+  smolList = [] 
+
+  with db_session:
+    for guild in bot.guilds:
+      if(ctx.message.guild.id == guild.id):
+        for channel in guild.channels:
+          if channel.type == discord.ChannelType.voice and channel != guild.afk_channel:
+            for virgin in channel.members:
+              if Virgin.exists(guild_id=str(guild.id), id=str(virgin.id)):
+                smol = Virgin.get(
+                    guild_id=str(guild.id), id=str(virgin.id))
+                Sname = smol.name
+                virgScore = calc_total_virginity(smol)
+                smolList.append((Sname,virgScore))
+
+  smolList = sorted(smolList, key=lambda x: x[1])
+  return await ctx.send(f'🏩 {smolList[0][0]} with {smolList[0][1]} {pluralize("point", smolList[0][1])} 💦')
 
 
 async def play_entrance_theme(channel):
