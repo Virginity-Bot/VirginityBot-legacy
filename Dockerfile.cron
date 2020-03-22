@@ -1,4 +1,4 @@
-FROM python:3
+FROM ubuntu:latest
 
 LABEL maintainer="louis@orleans.io"
 
@@ -11,10 +11,16 @@ ENV POSTGRES_PASS password
 ENV POINTS_PER_MINUTE 5
 ENV BOT_SCORE_MULTIPLIER 0.5
 
-RUN apt-get update && apt-get install -y ffmpeg
+RUN apt-get update
+RUN apt-get -y install cron
 
 RUN useradd --create-home virginitybot
 WORKDIR /home/virginitybot
+
+# Create the log file to be able to run tail
+RUN touch /var/log/cron.log
+RUN chown virginitybot /var/log/cron.log
+
 USER virginitybot
 
 COPY Dockerfile ./
@@ -23,9 +29,12 @@ COPY LICENSE ./
 COPY requirements.txt ./
 COPY src/*.py ./
 COPY assets/ ./assets
+COPY crontab ./
 
-RUN pip install -r requirements.txt
+USER root
 
-CMD python -u main.py
-
-# HEALTHCHECK CMD mcstatus localhost status || exit 1
+# Start cron and print log to stdout
+CMD cron && \
+  su virginitybot && \
+  crontab /home/virginitybot/crontab && \
+  tail -f /var/log/cron.log
