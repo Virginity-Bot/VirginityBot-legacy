@@ -34,7 +34,7 @@ jobs:
 
       - name: Publish to Registry
         run: |
-          REPO=$(${{ github.repository }} | tr '[A-Z]' '[a-z]')
+          REPO=docker.pkg.github.com/$(echo ${{ github.repository }} | tr '[A-Z]' '[a-z]')
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
 
           # Use Docker `latest` tag convention
