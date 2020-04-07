@@ -9,7 +9,7 @@ load_dotenv()
 POSTGRES_HOST = str(os.getenv('POSTGRES_HOST'))
 POSTGRES_PORT = int(os.getenv('POSTGRES_PORT'))
 POSTGRES_USER = str(os.getenv('POSTGRES_USER'))
-POSTGRES_PASS = str(os.getenv('POSTGRES_PASS'))
+POSTGRES_PASS = str(os.getenv('POSTGRES_PASSWORD'))
 
 db = Database()
 
@@ -34,7 +34,6 @@ class Guild(db.Entity):
   # virgins = Set(Virgin)
   afk_channel_id = Optional(str)
   biggest_virgin_role_id = Optional(str)
-
 
 
 def start_orm():
@@ -77,15 +76,18 @@ def calc_time_difference(start: datetime, end: datetime):
   secdiff = float(db.get(f'SELECT DateDiff (\'s\',\'{start}\',\'{end}\');'))
   return secdiff
 
+
 @db_session
 def calc_total_virginity(virgin: Virgin):
   currentDatetime = datetime.now()
   vc_conn_start = virgin.vc_connection_start
   virgin_id = virgin.id
   guild_id = virgin.guild_id
-  latest_vc_time = calc_time_difference(vc_conn_start,currentDatetime)
-  virgScore = int(db.get(f'SELECT calc_total_virginity (\'{virgin_id}\', \'{guild_id}\', \'{latest_vc_time}\');'))
+  latest_vc_time = calc_time_difference(vc_conn_start, currentDatetime)
+  virgScore = int(db.get(
+      f'SELECT calc_total_virginity (\'{virgin_id}\', \'{guild_id}\', \'{latest_vc_time}\');'))
   return virgScore
+
 
 @db_session
 def calc_total_virginity_ever(virgin: Virgin):
@@ -93,6 +95,7 @@ def calc_total_virginity_ever(virgin: Virgin):
   vc_conn_start = virgin.vc_connection_start
   virgin_id = virgin.id
   guild_id = virgin.guild_id
-  latest_vc_time = calc_time_difference(vc_conn_start,currentDatetime)
-  virgScoreEver = int(db.get(f'SELECT calc_total_virginity_ever (\'{virgin_id}\', \'{guild_id}\', \'{latest_vc_time}\');'))
+  latest_vc_time = calc_time_difference(vc_conn_start, currentDatetime)
+  virgScoreEver = int(db.get(
+      f'SELECT calc_total_virginity_ever (\'{virgin_id}\', \'{guild_id}\', \'{latest_vc_time}\');'))
   return virgScoreEver
