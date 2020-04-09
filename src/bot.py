@@ -99,7 +99,7 @@ async def checkvirginity(ctx):
         return await ctx.send(virginity_score)
 
 # /biggestvirgin
-@bot.command(name='biggestvcvirgin')
+@bot.command(name='biggestvirgin')
 async def biggestvirgin(ctx):
   if ctx.message.author == bot.user:
     return
@@ -108,7 +108,7 @@ async def biggestvirgin(ctx):
   await handlebiggestvirgin(ctx)
 
 # /topvirgin
-@bot.command(name='topvcvirgin')
+@bot.command(name='topvirgin')
 async def topvirgin(ctx):
   if ctx.message.author == bot.user:
     return
@@ -117,7 +117,7 @@ async def topvirgin(ctx):
   await handlebiggestvirgin(ctx)
 
 # /smolestvirgin
-@bot.command(name='smolestvcvirgin')
+@bot.command(name='smolestvirgin')
 async def smolestvirgi_n(ctx):
   if ctx.message.author == bot.user:
     return
@@ -276,44 +276,71 @@ def stop_adding_virginity(virgin: Virgin, finish_transaction=True):
 
 
 async def handlebiggestvirgin(ctx):
-  bigunList = []
-
-  with db_session:
-    for guild in bot.guilds:
-      if(ctx.message.guild.id == guild.id):
-        for channel in guild.channels:
-          if channel.type == discord.ChannelType.voice and channel != guild.afk_channel:
-            for virgin in channel.members:
-              if Virgin.exists(guild_id=str(guild.id), id=str(virgin.id)):
-                bigun = Virgin.get(
-                    guild_id=str(guild.id), id=str(virgin.id))
-                bname = bigun.name
-                virgScore = calc_total_virginity(bigun)
-                bigunList.append((bname,virgScore))
+  calculatedVCVirgs = []
+  combinedTop = []
+  topVirgins = get_top_virgins(str(ctx.guild.id))
+  vcVirgins = get_active_virgins(str(ctx.guild.id))
   
-  bigunList = sorted(bigunList, key=lambda x: x[1], reverse=True)
-  return await ctx.send(f'🏩 {bigunList[0][0]} with {bigunList[0][1]} {pluralize("point", bigunList[0][1])} 💦')
+  with db_session:
+    for vcVirg in vcVirgins:
+      virgScore = calc_total_virginity(vcVirg)
+      calculatedVCVirgs.append((vcVirg.id, vcVirg.name, virgScore))
+
+    for topVirg in topVirgins:
+      isAdded = False
+      for calcVirg in calculatedVCVirgs:
+        if topVirg.id == calcVirg[0]:
+          isAdded = True
+          combinedTop.append(calcVirg)
+          break
+      if not isAdded:
+        combinedTop.append((topVirg.id, topVirg.name, topVirg.virginity_score))
+
+  combinedTop = sorted(combinedTop, key=lambda x: x[2], reverse=True)
+  logger.info(combinedTop)
+
+  msg = Embed(
+      title=f'Biggest Virgin of {ctx.guild.name}', description='')
+  # msg.color(Colour.from_rgb(255, 41, 255))
+  # msg.add_field(name='field 1', value='value 1')
+  for i, tVirgin in enumerate(combinedTop):
+    if i < 1:
+      msg.description += f'{tVirgin[1]} with {tVirgin[2]} {pluralize("points", tVirgin[2])} 💦'
+  await ctx.send(embed=msg)
 
 
 async def handlesmolestvirgin(ctx):
-  smolList = [] 
-
+  calculatedVCVirgs = []
+  combinedBot = []
+  botVirgins = get_bot_virgins(str(ctx.guild.id))
+  vcVirgins = get_active_virgins(str(ctx.guild.id))
+  
   with db_session:
-    for guild in bot.guilds:
-      if(ctx.message.guild.id == guild.id):
-        for channel in guild.channels:
-          if channel.type == discord.ChannelType.voice and channel != guild.afk_channel:
-            for virgin in channel.members:
-              if Virgin.exists(guild_id=str(guild.id), id=str(virgin.id)):
-                smol = Virgin.get(
-                    guild_id=str(guild.id), id=str(virgin.id))
-                Sname = smol.name
-                virgScore = calc_total_virginity(smol)
-                smolList.append((Sname,virgScore))
+    for vcVirg in vcVirgins:
+      virgScore = calc_total_virginity(vcVirg)
+      calculatedVCVirgs.append((vcVirg.id, vcVirg.name, virgScore))
 
-  smolList = sorted(smolList, key=lambda x: x[1])
-  return await ctx.send(f'🏩 {smolList[0][0]} with {smolList[0][1]} {pluralize("point", smolList[0][1])} 💦')
+    for botVirg in botVirgins:
+      isAdded = False
+      for calcVirg in calculatedVCVirgs:
+        if botVirg.id == calcVirg[0]:
+          isAdded = True
+          combinedBot.append(calcVirg)
+          break
+      if not isAdded:
+        combinedBot.append((botVirg.id, botVirg.name, botVirg.virginity_score))
 
+  combinedBot = sorted(combinedBot, key=lambda x: x[2])
+  logger.info(combinedBot)
+
+  msg = Embed(
+      title=f'Smolest Virgin of {ctx.guild.name}', description='')
+  # msg.color(Colour.from_rgb(255, 41, 255))
+  # msg.add_field(name='field 1', value='value 1')
+  for i, tVirgin in enumerate(combinedBot):
+    if i < 1:
+      msg.description += f'{tVirgin[1]} with {tVirgin[2]} {pluralize("points", tVirgin[2])} 🌈'
+  await ctx.send(embed=msg)
 
 async def play_entrance_theme(channel):
   voice_client = await channel.connect()

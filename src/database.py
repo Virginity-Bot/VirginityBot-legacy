@@ -58,6 +58,9 @@ def get_top_virgins(guild: str, limit=10, exclude_bots=True):
   # TODO: actually respect exclude_bots
   return Virgin.select(lambda v: v.guild_id == guild and v.is_bot == False).sort_by(desc(Virgin.virginity_score)).limit(limit)
 
+@db_session
+def get_bot_virgins(guild: str, limit=10, exclude_bots=True):
+  return Virgin.select(lambda v: v.guild_id == guild and v.is_bot == False and v.virginity_score != 0).sort_by(Virgin.virginity_score).limit(limit)
 
 @db_session
 def get_active_virgins(guild: str, exclude_bots=True):
