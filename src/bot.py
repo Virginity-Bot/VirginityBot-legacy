@@ -23,6 +23,7 @@ TOKEN = str(os.getenv('DISCORD_TOKEN'))
 logger = logging.getLogger('virginity-bot')
 
 bot = commands.Bot(command_prefix=('/'))
+bot.remove_command('help')
 
 voice_client: VoiceClient = None
 
@@ -58,6 +59,23 @@ async def on_disconnect():
   # TODO: wrap up all open transactions
   if voice_client != None:
     await voice_client.disconnect()
+
+# /help
+@bot.command(name='help')
+async def help(ctx):
+  if ctx.message.author == bot.user:
+    return
+
+  msg = Embed(title='Virginity Bot - Help')
+  msg.add_field(name='/myvirginity', value='Check your own virginity.', inline=False)
+  msg.add_field(name='/checkvirginity {user}', value='Check the virginity of a user.', inline=False)
+  msg.add_field(name='/biggestvirgin', value='Find the biggest virgin in the server.', inline=False)
+  msg.add_field(name='/topvirgin', value='Find the biggest virgin in the server.', inline=False)
+  msg.add_field(name='smolestvirgin', value='Find the smolest virgin in the server.', inline=False)
+  msg.add_field(name='/leaderboard', value='List the biggest virgins in the server.', inline=False)
+  msg.add_field(name='/resetvirginity', value='Undo your virginity.', inline=False)
+  
+  await bot.send_message(ctx.message.author, embed=msg)
 
 # /myvirginity
 @bot.command(name='myvirginity')
@@ -104,7 +122,6 @@ async def biggestvirgin(ctx):
   if ctx.message.author == bot.user:
     return
   await ctx.trigger_typing()
-  # TODO: update virginity_score for all connected users before display
   await handlebiggestvirgin(ctx)
 
 # /topvirgin
@@ -113,7 +130,6 @@ async def topvirgin(ctx):
   if ctx.message.author == bot.user:
     return
   await ctx.trigger_typing()
-  # TODO: update virginity_score for all connected users before display
   await handlebiggestvirgin(ctx)
 
 # /smolestvirgin
