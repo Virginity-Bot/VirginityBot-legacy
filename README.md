@@ -2,8 +2,6 @@
 
 A discord bot for the biggest virgins.
 
-
-
 ### Supported Commands
 
 /myvirginity - check my own virginity
@@ -13,7 +11,6 @@ A discord bot for the biggest virgins.
 /smolestvirgin - smolest Virgin in the server
 /leaderboard - list of all virgins in the server
 /resetvirginity - Reset your virginity
-
 
 ### How to Increase Your Virginity
 
@@ -25,10 +22,7 @@ A discord bot for the biggest virgins.
 
 * Alpha virgin role - rename to Ω Virgin?
 * Extra points for streaming with viewers?
-* smallest virgin should exclude people who aren't regulars
 
-https://discordapp.com/api/oauth2/authorize?client_id=618030986986389504&permissions=271871040&scope=bot
+* Dude's Bot: https://discordapp.com/api/oauth2/authorize?client_id=618030986986389504&permissions=271871040&scope=bot
 
-### SQL
-
-- Calculate time to add
+* Brian's Bot: https://discordapp.com/api/oauth2/authorize?client_id=688470281320267800&permissions=472991744&scope=bot

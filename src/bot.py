@@ -66,7 +66,8 @@ async def help(ctx):
   if ctx.message.author == bot.user:
     return
 
-  msg = Embed(title='Virginity Bot - Help')
+  msg = Embed(title='Virginity Bot - Help', url='https://discordapp.com/api/oauth2/authorize?client_id=688470281320267800&permissions=472991744&scope=bot')
+  #msg.url(text=f'[Add Virginity Bot to your server!]()')
   msg.add_field(name='/myvirginity', value='Check your own virginity.', inline=False)
   msg.add_field(name='/checkvirginity {user}', value='Check the virginity of a user.', inline=False)
   msg.add_field(name='/biggestvirgin', value='Find the biggest virgin in the server.', inline=False)
@@ -75,7 +76,7 @@ async def help(ctx):
   msg.add_field(name='/leaderboard', value='List the biggest virgins in the server.', inline=False)
   msg.add_field(name='/resetvirginity', value='Undo your virginity.', inline=False)
   
-  await bot.send_message(ctx.message.author, embed=msg)
+  await ctx.message.author.send(embed=msg)
 
 # /myvirginity
 @bot.command(name='myvirginity')
