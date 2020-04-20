@@ -67,7 +67,6 @@ async def help(ctx):
     return
 
   msg = Embed(title='Virginity Bot - Help', url='https://discordapp.com/api/oauth2/authorize?client_id=688470281320267800&permissions=472991744&scope=bot')
-  #msg.url(text=f'[Add Virginity Bot to your server!]()')
   msg.add_field(name='/myvirginity', value='Check your own virginity.', inline=False)
   msg.add_field(name='/checkvirginity {user}', value='Check the virginity of a user.', inline=False)
   msg.add_field(name='/biggestvirgin', value='Find the biggest virgin in the server.', inline=False)
