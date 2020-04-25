@@ -71,7 +71,7 @@ async def help(ctx):
   msg.add_field(name='/checkvirginity {user}', value='Check the virginity of a user.', inline=False)
   msg.add_field(name='/biggestvirgin', value='Find the biggest virgin in the server.', inline=False)
   msg.add_field(name='/topvirgin', value='Find the biggest virgin in the server.', inline=False)
-  msg.add_field(name='smolestvirgin', value='Find the smolest virgin in the server.', inline=False)
+  msg.add_field(name='/smolestvirgin', value='Find the smolest virgin in the server.', inline=False)
   msg.add_field(name='/leaderboard', value='List the biggest virgins in the server.', inline=False)
   msg.add_field(name='/resetvirginity', value='Undo your virginity.', inline=False)
   
