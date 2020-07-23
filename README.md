@@ -2,31 +2,25 @@
 
 A discord bot for the biggest virgins.
 
-https://realpython.com/how-to-make-a-discord-bot-python/#how-to-make-a-discord-bot-in-the-developer-portal
+[Invite Virginity Bot to your Server](https://discordapp.com/api/oauth2/authorize?client_id=688470281320267800&permissions=472991744&scope=bot)
 
-https://discordapp.com/developers/applications/688470281320267800/bot
+## Supported Commands
 
-### Supported Commands
+* `/myvirginity` - check your own virginity
+* `/checkvirginity {Discord.User}` - check virginity of other users in the server
+* `/biggestvirgin` - biggest Virgin in the server
+* `/topvirgin` - biggest Virgin in the server
+* `/smolestvirgin` - smolest Virgin in the server
+* `/leaderboard` - list top 10 virgins in the server
+* `/resetvirginity` - Reset your virginity
 
-/myvirginity
-
-/biggetsvirgin
-
-/sizedoesntmatter - secret command?
-
-### interesting events
-
-### Virginity Rules
+## How to Increase Your Virginity
 
 1. Virginity counter starts on initial voice channel join
-2. Not in AFK channel
-3. Alpha virgin role?
-4. rename to Ω Virgin?
-5. extra points for streaming with viewers?
-6. smallest virgin should exclude people who aren't regulars
+2. Virgins must not be muted of defeaned
+3. Virgins may not be in the AFK channel
 
-https://discordapp.com/api/oauth2/authorize?client_id=618030986986389504&permissions=271871040&scope=bot
+### Potential Improvements
 
-### SQL
-
-- Calculate time to add
+* Alpha virgin role - rename to Ω Virgin?
+* Extra points for streaming with viewers?

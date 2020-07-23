@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM python:3
 
 LABEL maintainer="louis@orleans.io"
 
@@ -7,7 +7,7 @@ ENV DISCORD_TOKEN bot-token
 ENV POSTGRES_HOST hostname
 ENV POSTGRES_PORT 5432
 ENV POSTGRES_USER postgres
-ENV POSTGRES_PASS password
+ENV POSTGRES_PASSWORD password
 ENV POINTS_PER_MINUTE 5
 ENV BOT_SCORE_MULTIPLIER 0.5
 
@@ -32,6 +32,8 @@ COPY assets/ ./assets
 COPY crontab ./
 
 USER root
+
+RUN pip install -r requirements.txt --progress-bar off
 
 # Start cron and print log to stdout
 CMD cron && \

@@ -5,7 +5,7 @@ import logging
 from pony.orm import *
 
 import logger
-from database import start_orm, get_biggest_virgin, Guild
+from database import start_orm, get_biggest_virgin, Guild, Virgin
 
 logger = logging.getLogger('virginity-bot')
 
