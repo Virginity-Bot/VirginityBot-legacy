@@ -11,7 +11,7 @@ A discord bot for the biggest virgins.
 * `/biggestvirgin` - biggest Virgin in the server
 * `/topvirgin` - biggest Virgin in the server
 * `/smolestvirgin` - smolest Virgin in the server
-* `/leaderboard` - list of all virgins in the server
+* `/leaderboard` - list of top 10 virgins in the server
 * `/resetvirginity` - Reset your virginity
 
 ## How to Increase Your Virginity
