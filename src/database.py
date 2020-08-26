@@ -24,6 +24,7 @@ class Virgin(db.Entity):
   total_vc_time_ever = Required(float, default=0)
   virginity_score = Required(int, default=0, index=True)
   vc_connection_start = Optional(datetime)
+  vc_connection_end = Optional(datetime)
 
   PrimaryKey(guild_id, id)
 
@@ -82,11 +83,11 @@ def calc_time_difference(start: datetime, end: datetime):
 
 @db_session
 def calc_total_virginity(virgin: Virgin):
-  currentDatetime = datetime.now()
+  vc_conn_end = virgin.vc_connection_end = datetime.now()
   vc_conn_start = virgin.vc_connection_start
   virgin_id = virgin.id
   guild_id = virgin.guild_id
-  latest_vc_time = calc_time_difference(vc_conn_start, currentDatetime)
+  latest_vc_time = calc_time_difference(vc_conn_start, vc_conn_end)
   virgScore = int(db.get(
       f'SELECT calc_total_virginity (\'{virgin_id}\', \'{guild_id}\', \'{latest_vc_time}\');'))
   return virgScore
