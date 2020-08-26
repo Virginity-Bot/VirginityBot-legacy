@@ -40,7 +40,7 @@ async def award_omega_virgin_roles():
 
         body = {
             'name': 'Chonkiest Virgin the World Has Ever Seen',
-            'color': '12911440',
+            'color': '15098520',
             'hoist': True,
             'mentionable': True
         }
