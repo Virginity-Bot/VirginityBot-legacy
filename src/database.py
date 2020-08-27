@@ -83,7 +83,10 @@ def calc_time_difference(start: datetime, end: datetime):
 
 @db_session
 def calc_total_virginity(virgin: Virgin):
-  vc_conn_end = virgin.vc_connection_end = datetime.now()
+  vc_conn_end = virgin.vc_connection_end 
+  if vc_conn_end == None or vc_conn_end < datetime.now():
+    virgin.vc_connection_end = datetime.now()
+    vc_conn_end = virgin.vc_connection_end
   vc_conn_start = virgin.vc_connection_start
   virgin_id = virgin.id
   guild_id = virgin.guild_id

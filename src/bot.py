@@ -263,8 +263,8 @@ def start_adding_virginity(virgin: Member, voice_state: VoiceState):
         real_virgin = Virgin.get(guild_id=str(virgin.guild.id),
                                  id=str(virgin.id))
         # TODO: be more thoughtful about overriding start times
-        real_virgin.vc_connection_end = None
         real_virgin.vc_connection_start = datetime.now()
+        real_virgin.vc_connection_end = None
         commit()
       else:
         Virgin(guild_id=str(virgin.guild.id), id=str(virgin.id), name=virgin.name,
@@ -274,7 +274,8 @@ def start_adding_virginity(virgin: Member, voice_state: VoiceState):
 
 @db_session
 def stop_adding_virginity(virgin: Virgin, finish_transaction=True):
-  vc_conn_end = virgin.vc_connection_end = datetime.now()
+  virgin.vc_connection_end = datetime.now()
+  vc_conn_end = virgin.vc_connection_end
   vc_conn_start = virgin.vc_connection_start
   latest_vc_time = calc_time_difference(vc_conn_start, vc_conn_end)
   if (latest_vc_time < 0):
@@ -288,6 +289,7 @@ def stop_adding_virginity(virgin: Virgin, finish_transaction=True):
   virgin.virginity_score = calc_total_virginity(virgin)
 
   virgin.vc_connection_start = None
+  virgin.vc_connection_end = None
   if finish_transaction:
     commit()
 
