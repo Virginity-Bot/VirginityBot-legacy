@@ -23,7 +23,7 @@ RUN chown virginitybot /var/log/cron.log
 
 USER virginitybot
 
-COPY Dockerfile ./
+COPY Dockerfile.cron ./Dockerfile
 COPY README.md ./
 COPY LICENSE ./
 COPY requirements.txt ./
@@ -34,7 +34,7 @@ COPY crontab ./
 USER root
 
 # Copy env vars in to system env so that cron has them
-env >> /etc/environment
+RUN env >> /etc/environment
 
 RUN pip install -r requirements.txt --progress-bar off
 
