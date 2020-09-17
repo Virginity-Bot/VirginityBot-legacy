@@ -33,6 +33,9 @@ COPY crontab ./
 
 USER root
 
+# Copy env vars in to system env so that cron has them
+env >> /etc/environment
+
 RUN pip install -r requirements.txt --progress-bar off
 
 # Start cron and print log to stdout
