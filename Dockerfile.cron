@@ -33,13 +33,13 @@ COPY crontab ./
 
 USER root
 
-# Copy env vars in to system env so that cron has them
-RUN env >> /etc/environment
-
 RUN pip install -r requirements.txt --progress-bar off
 
 # Start cron and print log to stdout
-CMD cron && \
+# Copy env vars in to system env so that cron has them
+CMD env >> /etc/environment && \
+  cron && \
   su virginitybot && \
   crontab /home/virginitybot/crontab && \
   tail -f /var/log/cron.log
+
