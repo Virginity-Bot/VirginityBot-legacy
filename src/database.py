@@ -10,6 +10,7 @@ POSTGRES_HOST = str(os.getenv('POSTGRES_HOST') or 'localhost')
 POSTGRES_PORT = int(os.getenv('POSTGRES_PORT') or '5432')
 POSTGRES_USER = str(os.getenv('POSTGRES_USER') or 'postgres')
 POSTGRES_PASS = str(os.getenv('POSTGRES_PASSWORD') or 'postgres')
+POSTGRES_DB = str(os.getenv('POSTGRES_DB') or 'postgres')
 
 db = Database()
 
@@ -39,7 +40,7 @@ class Guild(db.Entity):
 
 def start_orm():
   db.bind(provider='postgres', host=POSTGRES_HOST, port=POSTGRES_PORT,
-          user=POSTGRES_USER, password=POSTGRES_PASS)
+          user=POSTGRES_USER, password=POSTGRES_PASS, database=POSTGRES_DB)
 
   db.generate_mapping(create_tables=True)
 
