@@ -6,10 +6,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-POSTGRES_HOST = str(os.getenv('POSTGRES_HOST'))
-POSTGRES_PORT = int(os.getenv('POSTGRES_PORT'))
-POSTGRES_USER = str(os.getenv('POSTGRES_USER'))
-POSTGRES_PASS = str(os.getenv('POSTGRES_PASSWORD'))
+POSTGRES_HOST = str(os.getenv('POSTGRES_HOST') or 'localhost')
+POSTGRES_PORT = int(os.getenv('POSTGRES_PORT') or '5432')
+POSTGRES_USER = str(os.getenv('POSTGRES_USER') or 'postgres')
+POSTGRES_PASS = str(os.getenv('POSTGRES_PASSWORD') or 'postgres')
 
 db = Database()
 
