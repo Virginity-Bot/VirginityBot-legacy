@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  virginity-bot-server:
+    build:
+      context: './'
+      dockerfile: './Dockerfile'
+    ports:
+      - '8000:8000'
+    env_file: virginity-bot.env
+    networks:
+      - virgin-net
+    depends_on:
+      - virginity-bot-db
+  virginity-bot-cron:
+    build:
+      context: './'
+      dockerfile: './Dockerfile.cron'
+    env_file: virginity-bot.env
+    networks:
+      - virgin-net
+    depends_on:
+      - virginity-bot-db
+  virginity-bot-db:
+    image: postgres:11
+    ports:
+      - '5432:5432'
+    env_file: virginity-bot.env
+    networks:
+      - virgin-net
+
+networks:
+  virgin-net:
