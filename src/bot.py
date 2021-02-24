@@ -324,7 +324,7 @@ async def handlebiggestvirgin(ctx):
   # msg.add_field(name='field 1', value='value 1')
   for i, tVirgin in enumerate(combinedTop):
     if i < 1:
-      msg.description += f'{tVirgin[1]} with {tVirgin[2]} {pluralize("points", tVirgin[2])} 💦'
+      msg.description += f'{tVirgin[1]} with {tVirgin[2]} {pluralize("point", tVirgin[2])} 💦'
   await ctx.send(embed=msg)
 
 
@@ -358,7 +358,7 @@ async def handlesmolestvirgin(ctx):
   # msg.add_field(name='field 1', value='value 1')
   for i, tVirgin in enumerate(combinedBot):
     if i < 1:
-      msg.description += f'{tVirgin[1]} with {tVirgin[2]} {pluralize("points", tVirgin[2])} 🌈'
+      msg.description += f'{tVirgin[1]} with {tVirgin[2]} {pluralize("point", tVirgin[2])} 🌈'
   await ctx.send(embed=msg)
 
 async def play_entrance_theme(channel):
