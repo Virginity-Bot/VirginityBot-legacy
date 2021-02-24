@@ -1,8 +1,11 @@
 import os
 from datetime import datetime
+import logging
 
 from pony.orm import *
 from dotenv import load_dotenv
+
+import logger
 
 load_dotenv()
 
@@ -13,7 +16,7 @@ POSTGRES_PASS = str(os.getenv('POSTGRES_PASSWORD') or 'postgres')
 POSTGRES_DB = str(os.getenv('POSTGRES_DB') or 'postgres')
 
 db = Database()
-
+logger = logging.getLogger('virginity-bot')
 
 class Virgin(db.Entity):
   id = Required(str, index=True)
@@ -39,10 +42,14 @@ class Guild(db.Entity):
 
 
 def start_orm():
-  db.bind(provider='postgres', host=POSTGRES_HOST, port=POSTGRES_PORT,
-          user=POSTGRES_USER, password=POSTGRES_PASS, database=POSTGRES_DB)
-
-  db.generate_mapping(create_tables=True)
+  try:
+    db.bind(provider='postgres', host=POSTGRES_HOST, port=POSTGRES_PORT,
+            user=POSTGRES_USER, password=POSTGRES_PASS, database=POSTGRES_DB)
+  except TypeError as err:
+    logger.error(err)
+    exit(1)
+  else:
+    db.generate_mapping(create_tables=True)
 
 
 @db_session
@@ -84,7 +91,7 @@ def calc_time_difference(start: datetime, end: datetime):
 
 @db_session
 def calc_total_virginity(virgin: Virgin):
-  vc_conn_end = virgin.vc_connection_end 
+  vc_conn_end = virgin.vc_connection_end
   if vc_conn_end == None or vc_conn_end < datetime.now():
     virgin.vc_connection_end = datetime.now()
     vc_conn_end = virgin.vc_connection_end
