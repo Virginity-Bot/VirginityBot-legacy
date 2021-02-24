@@ -74,7 +74,7 @@ async def help(ctx):
   msg.add_field(name='/smolestvirgin', value='Find the smolest virgin in the server.', inline=False)
   msg.add_field(name='/leaderboard', value='List the biggest virgins in the server.', inline=False)
   msg.add_field(name='/resetvirginity', value='Undo your virginity.', inline=False)
-  
+
   await ctx.message.author.send(embed=msg)
 
 # /myvirginity
@@ -152,7 +152,7 @@ async def leaderboard(ctx: commands.Context):
   combinedTop = []
   topVirgins = get_top_virgins(str(ctx.guild.id))
   vcVirgins = get_active_virgins(str(ctx.guild.id))
-  
+
   with db_session:
     for vcVirg in vcVirgins:
       virgScore = calc_total_virginity(vcVirg)
@@ -299,7 +299,7 @@ async def handlebiggestvirgin(ctx):
   combinedTop = []
   topVirgins = get_top_virgins(str(ctx.guild.id))
   vcVirgins = get_active_virgins(str(ctx.guild.id))
-  
+
   with db_session:
     for vcVirg in vcVirgins:
       virgScore = calc_total_virginity(vcVirg)
@@ -333,7 +333,7 @@ async def handlesmolestvirgin(ctx):
   combinedBot = []
   botVirgins = get_bot_virgins(str(ctx.guild.id))
   vcVirgins = get_active_virgins(str(ctx.guild.id))
-  
+
   with db_session:
     for vcVirg in vcVirgins:
       virgScore = calc_total_virginity(vcVirg)
