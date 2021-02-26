@@ -29,6 +29,31 @@ voice_client: VoiceClient = None
 
 
 @bot.event
+async def on_guild_join(guild):
+  await guild.create_text_channel('virginity-bot')
+  with db_session:
+    if Guild.exists(id=str(guild.id)):
+      db_guild = Guild.get(id=str(guild.id))
+      db_guild.name = guild.name
+      db_guild.afk_channel_id = guild.afk_channel.id or None
+    else:
+      Guild(
+          id=str(guild.id), name=guild.name,
+          afk_channel_id=guild.afk_channel.id or None)
+    commit()
+
+
+@bot.event
+async def on_guild_update(before, after):
+  with db_session:
+    if Guild.exists(id=str(after.id)):
+      db_guild = Guild.get(id=str(after.id))
+      db_guild.name = after.name
+      db_guild.afk_channel_id = after.afk_channel.id or None
+      commit()
+
+
+@bot.event
 async def on_connect():
   logger.info(f'{bot.user.name} has connected to Discord!')
 
