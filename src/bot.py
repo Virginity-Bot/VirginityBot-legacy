@@ -61,21 +61,32 @@ async def on_disconnect():
     await voice_client.disconnect()
 
 # /help
+
+
 @bot.command(name='help')
 async def help(ctx):
   if ctx.message.author == bot.user:
     return
 
-  msg = Embed(title='Virginity Bot - Help', url='https://discordapp.com/api/oauth2/authorize?client_id=688470281320267800&permissions=472991744&scope=bot')
-  msg.add_field(name='/myvirginity', value='Check your own virginity.', inline=False)
-  msg.add_field(name='/checkvirginity {user}', value='Check the virginity of a user.', inline=False)
-  msg.add_field(name='/biggestvirgin', value='Find the biggest virgin in the server.', inline=False)
-  msg.add_field(name='/topvirgin', value='Find the biggest virgin in the server.', inline=False)
-  msg.add_field(name='/smolestvirgin', value='Find the smolest virgin in the server.', inline=False)
-  msg.add_field(name='/leaderboard', value='List the biggest virgins in the server.', inline=False)
-  msg.add_field(name='/resetvirginity', value='Undo your virginity.', inline=False)
+  msg = Embed(title='Virginity Bot - Help',
+              url='https://discordapp.com/api/oauth2/authorize?client_id=688470281320267800&permissions=472991744&scope=bot')
+  msg.add_field(name='/myvirginity',
+                value='Check your own virginity.', inline=False)
+  msg.add_field(
+      name='/checkvirginity {user}', value='Check the virginity of a user.', inline=False)
+  msg.add_field(name='/biggestvirgin',
+                value='Find the biggest virgin in the server.', inline=False)
+  msg.add_field(name='/topvirgin',
+                value='Find the biggest virgin in the server.', inline=False)
+  msg.add_field(name='/smolestvirgin',
+                value='Find the smolest virgin in the server.', inline=False)
+  msg.add_field(name='/leaderboard',
+                value='List the biggest virgins in the server.', inline=False)
+  msg.add_field(name='/resetvirginity',
+                value='Undo your virginity.', inline=False)
 
   await ctx.message.author.send(embed=msg)
+
 
 # /myvirginity
 @bot.command(name='myvirginity')
@@ -94,6 +105,7 @@ async def myvirginity(ctx):
     virginity_score = calc_total_virginity(virgin)
     commit()
     return await ctx.send(virginity_score)
+
 
 # /checkvirgininty
 @bot.command(name='checkvirginity')
@@ -116,6 +128,7 @@ async def checkvirginity(ctx):
         commit()
         return await ctx.send(virginity_score)
 
+
 # /biggestvirgin
 @bot.command(name='biggestvirgin')
 async def biggestvirgin(ctx):
@@ -124,6 +137,7 @@ async def biggestvirgin(ctx):
   await ctx.trigger_typing()
   await handlebiggestvirgin(ctx)
 
+
 # /topvirgin
 @bot.command(name='topvirgin')
 async def topvirgin(ctx):
@@ -131,6 +145,7 @@ async def topvirgin(ctx):
     return
   await ctx.trigger_typing()
   await handlebiggestvirgin(ctx)
+
 
 # /smolestvirgin
 @bot.command(name='smolestvirgin')
@@ -186,6 +201,7 @@ async def resetvirginity(ctx):
   if ctx.message.author == bot.user:
     return
   return await ctx.send(f'🔴 I\'m sorry {ctx.message.author.name}, I\'m afraid I can\'t do that.')
+
 
 # /add
 @bot.command(name='add')
@@ -360,6 +376,7 @@ async def handlesmolestvirgin(ctx):
     if i < 1:
       msg.description += f'{tVirgin[1]} with {tVirgin[2]} {pluralize("point", tVirgin[2])} 🌈'
   await ctx.send(embed=msg)
+
 
 async def play_entrance_theme(channel):
   voice_client = await channel.connect()
