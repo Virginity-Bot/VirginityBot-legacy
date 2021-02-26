@@ -147,8 +147,8 @@ async def topvirgin(ctx):
   await handlebiggestvirgin(ctx)
 
 
-# /smolestvirgin
-@bot.command(name='smolestvirgin')
+# /smallestvirgin
+@bot.command(name='smallestvirgin')
 async def smolestvirgi_n(ctx):
   if ctx.message.author == bot.user:
     return
