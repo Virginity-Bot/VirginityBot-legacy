@@ -260,9 +260,12 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
       # TODO: figure out a way to cache this
       guild = Guild.get(id=str(member.guild.id))
 
-      if len(list(filter(lambda role: str(role.id) == guild.biggest_virgin_role_id, member.roles))) >= 1:
-        logger.info(f'biggest virgin has connected')
-        await play_entrance_theme(after.channel)
+      if guild == None:
+        logger.error(f'Unable to find guild {member.guild.id}')
+      else:
+        if len(list(filter(lambda role: str(role.id) == guild.biggest_virgin_role_id, member.roles))) >= 1:
+          logger.info(f'biggest virgin has connected')
+          await play_entrance_theme(after.channel)
 
 
 @db_session
